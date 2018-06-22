@@ -14,6 +14,15 @@ type Position struct {
   row, col int
 }
 
+func (p Position) String() string {
+  if p.col == -1 {
+    return "nullPos"
+  }
+  cols := "abcdefgh"
+  return fmt.Sprintf("%c%d", cols[p.col], p.row+1)
+  // return fmt.Sprintf("%d", p.col)
+}
+
 type Board struct {
   whites, blacks map[Position]string
   whiteToMove bool
@@ -92,7 +101,7 @@ func GeneratePositions(pos string) (map[Position]string, map[Position]string) {
           blacks[Position{7-i,j+offset}] = string(sq)
         default:
           // This gives the numeric value of the rune(ie '56' to the int 8)
-          offset += int(sq - '0')
+          offset += int(sq - '0') - 1
         }
       }
     }
