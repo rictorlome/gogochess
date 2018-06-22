@@ -56,14 +56,16 @@ func GenerateBoard(fen string) Board {
 
 func SetAvailableCastles(avail string) map[string]bool {
   availableCastles := map[string]bool{"bk" : false, "bq": false, "wk": false, "wq": false}
-  switch {
-  case strings.Contains(avail, "K"):
+  if strings.Contains(avail, "K") {
     availableCastles["wk"] = true
-  case strings.Contains(avail, "Q"):
+  }
+  if strings.Contains(avail, "Q") {
     availableCastles["wq"] = true
-  case strings.Contains(avail, "k"):
+  }
+  if strings.Contains(avail, "k") {
     availableCastles["bk"] = true
-  case strings.Contains(avail, "q"):
+  }
+  if strings.Contains(avail, "q") {
     availableCastles["bq"] = true
   }
   return availableCastles
@@ -109,9 +111,4 @@ func main() {
   fmt.Println(b.enPassantSquare)
   t := time.Now()
   fmt.Println(t.Sub(start))
-
-  // p := Position{1,1}
-  // b := Board{}
-  // b.grid[0] = &p
-  // fmt.Println(p,b)
 }
