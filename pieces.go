@@ -1,123 +1,128 @@
 package main
 
-import (
-  "fmt"
-  "strings"
-  "time"
-)
+// import "fmt"
 
-/*
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-*/
-
-type Position struct {
-  row, col int
-}
-
-func (p Position) String() string {
-  if p.col == -1 {
-    return "nullPos"
-  }
-  cols := "abcdefgh"
-  return fmt.Sprintf("%c%d", cols[p.col], p.row+1)
-  // return fmt.Sprintf("%d", p.col)
-}
-
-type Board struct {
-  whites, blacks map[Position]string
-  whiteToMove bool
-  availableCastles map[string]bool
-  enPassantSquare Position
-}
+var SIZE int = 7
 
 type Piece interface {
-  GetMoves(p Position, f Board) []Position
+  GetPseudoLegalMoves(pos Position, b *Board) []Position
+  GetLegalMoves(pos Position, b *Board) []Position
 }
 
-var whiteSymbols = map[string]bool{
-  "R": true,
-  "N": true,
-  "B": true,
-  "Q": true,
-  "K": true,
-  "P": true,
-}
-var blackSymbols = map[string]bool{
-  "r": true,
-  "n": true,
-  "b": true,
-  "q": true,
-  "k": true,
-  "p": true,
+type King struct {
+  isWhite bool
 }
 
-func GenerateBoard(fen string) Board {
-  b := Board{}
-  fields := strings.Split(fen, " ")
-
-  b.whites, b.blacks = GeneratePositions(fields[0])
-  b.whiteToMove = (fields[1] == string('w'))
-  b.availableCastles = SetAvailableCastles(fields[2])
-  b.enPassantSquare = SetEnpassantSquare(fields[3])
-
-  return b
-}
-
-func SetAvailableCastles(avail string) map[string]bool {
-  availableCastles := map[string]bool{"bk" : false, "bq": false, "wk": false, "wq": false}
-  if strings.Contains(avail, "K") {
-    availableCastles["wk"] = true
-  }
-  if strings.Contains(avail, "Q") {
-    availableCastles["wq"] = true
-  }
-  if strings.Contains(avail, "k") {
-    availableCastles["bk"] = true
-  }
-  if strings.Contains(avail, "q") {
-    availableCastles["bq"] = true
-  }
-  return availableCastles
-}
-
-func SetEnpassantSquare(algebriac string) Position {
-    return Position{-1,-1}
-}
-
-func GeneratePositions(pos string) (map[Position]string, map[Position]string) {
-    rows := strings.Split(pos, "/")
-    whites := make(map[Position]string)
-    blacks := make(map[Position]string)
-
-    for i, row := range rows {
-      offset := 0
-      for j, sq := range row {
-        _, white := whiteSymbols[string(sq)]
-        _, black := blackSymbols[string(sq)]
-        switch {
-        case white:
-          whites[Position{7-i,j+offset}] = string(sq)
-        case black:
-          blacks[Position{7-i,j+offset}] = string(sq)
-        default:
-          // This gives the numeric value of the rune(ie '56' to the int 8)
-          offset += int(sq - '0') - 1
-        }
+func (k *King) GetMovesOnBoard(pos Position) []Position {
+  var res []Position
+  nums := []int{-1,0,1}
+  for _, i := range(nums) {
+    for _, j := range(nums) {
+      if !(i == 0 && j == 0) {
+        newPos := Position{pos.row+i,pos.col+j}
+        res = append(res, newPos)
       }
     }
-    return whites, blacks
+  }
+  return res
 }
 
-func main() {
-  fen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  start := time.Now()
-  b := GenerateBoard(fen)
 
-  fmt.Println(b.whites)
-  fmt.Println(b.blacks)
-  fmt.Println(b.whiteToMove)
-  fmt.Println(b.availableCastles)
-  fmt.Println(b.enPassantSquare)
-  t := time.Now()
-  fmt.Println(t.Sub(start))
+type Knight struct {
+  isWhite bool
+}
+
+func (n *Knight) GetMovesOnBoard(pos Position) []Position {
+  var res []Position
+  moveDiffs := [][]int{
+    []int{1,2}, []int{1,-2},
+    []int{-1,2}, []int{-1,-2},
+    []int{2,1}, []int{2,-1},
+    []int{-2,1}, []int{-2,-1},
+  }
+  for _, diff := range(moveDiffs) {
+    newPos := Position{pos.row+diff[0],pos.col+diff[1]}
+    if newPos.isOnBoard() {
+      res = append(res, newPos)
+    }
+  }
+  return res
+}
+
+func (n *Knight) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  var res []Position
+  movesOnBoard := n.GetMovesOnBoard(pos)
+  ownColor := b.getColoredPieces(n.isWhite)
+  for _, move := range(movesOnBoard) {
+    _, pieceThere := ownColor[move]
+    if !pieceThere {
+      res = append(res, move)
+    }
+  }
+  return res
+}
+
+type Slider struct {
+  isWhite bool
+  moveDiffs [][]int
+}
+
+func (s *Slider) slide(moveDiffs [][]int, pos Position, b *Board) []Position {
+  var res []Position
+  OUTER:
+  for _, moveDiff := range(moveDiffs) {
+    for i := 1; i <= SIZE; i++ {
+      newPos := Position{pos.row + moveDiff[0] * i, pos.col + moveDiff[1] * i}
+      // Cannot capture own piece
+      if b.hasColoredPieceThere(s.isWhite, newPos) {
+        continue OUTER
+      }
+      if newPos.isOnBoard() {
+        res = append(res, newPos)
+      }
+      // Cannot slide beyond captured piece of opposite color
+      if b.hasColoredPieceThere(!s.isWhite, newPos) {
+        continue OUTER
+      }
+    }
+  }
+  return res
+}
+
+type Bishop struct {
+  Slider
+}
+
+func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  moveDiffs := [][]int{
+      []int{1,1}, []int{-1,-1},
+      []int{-1,1}, []int{1,-1},
+  }
+  return bish.slide(moveDiffs, pos, b)
+}
+
+type Rook struct {
+  Slider
+}
+
+func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  moveDiffs := [][]int{
+      []int{1,0}, []int{0,1},
+      []int{-1,0}, []int{0,-1},
+  }
+  return r.slide(moveDiffs, pos, b)
+}
+
+type Queen struct {
+  Slider
+}
+
+func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  moveDiffs := [][]int{
+      []int{1,0}, []int{0,1},
+      []int{-1,0}, []int{0,-1},
+      []int{1,1}, []int{-1,-1},
+      []int{-1,1}, []int{1,-1},
+  }
+  return q.slide(moveDiffs, pos, b)
 }
