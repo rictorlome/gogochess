@@ -32,7 +32,7 @@ type Bishop struct {
   Slider
 }
 
-func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) []Position {
   moveDiffs := [][]int{
       []int{1,1}, []int{-1,-1},
       []int{-1,1}, []int{1,-1},
@@ -40,12 +40,16 @@ func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   return bish.slide(moveDiffs, pos, b)
 }
 
+func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  return bish.GetAttackingSquares(pos, b)
+}
+
 type Rook struct {
   Slider
   DifferentIfMoved
 }
 
-func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (r *Rook) GetAttackingSquares(pos Position, b *Board) []Position {
   moveDiffs := [][]int{
       []int{1,0}, []int{0,1},
       []int{-1,0}, []int{0,-1},
@@ -53,11 +57,16 @@ func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   return r.slide(moveDiffs, pos, b)
 }
 
+
+func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  return r.GetAttackingSquares(pos, b)
+}
+
 type Queen struct {
   Slider
 }
 
-func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (q *Queen) GetAttackingSquares(pos Position, b *Board) []Position {
   moveDiffs := [][]int{
       []int{1,0}, []int{0,1},
       []int{-1,0}, []int{0,-1},
@@ -65,4 +74,8 @@ func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {
       []int{-1,1}, []int{1,-1},
   }
   return q.slide(moveDiffs, pos, b)
+}
+
+func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+  return q.GetAttackingSquares(pos, b)
 }

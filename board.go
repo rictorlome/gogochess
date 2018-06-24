@@ -20,6 +20,19 @@ func (p Position) isOnBoard() bool {
   return 0 <= p.col && p.col <= 7 && 0 <= p.row && p.row <= 7
 }
 
+func (p Position) isEmpty(b *Board) bool {
+  _, whiteThere := b.whites[p]
+  _, blackThere := b.blacks[p]
+  return (!whiteThere && !blackThere)
+}
+
+func (p Position) getNeighbors() []Position {
+  return []Position {
+    Position{p.row,p.col-1},
+    Position{p.row,p.col+1},
+  }
+}
+
 type Board struct {
   whites, blacks map[Position]string
   whiteToMove bool

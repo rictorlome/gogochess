@@ -14,10 +14,10 @@ func main() {
   // n.isWhite = true
   bish := Queen{}
   bish.isWhite = true
-  res := bish.GetPseudoLegalMoves(Position{4,4}, &b)
+  res := bish.GetPseudoLegalMoves(Position{5,5}, &b)
   // // fmt.Println(n.isWhite)
   // res := n.GetPseudoLegalMoves(Position{0,0}, &b)
-  fmt.Println(Position{4,4})
+  fmt.Println(Position{5,5}.getNeighbors())
   fmt.Println(res)
 
 
