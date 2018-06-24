@@ -1,49 +1,9 @@
 package main
 
 import (
-  "fmt"
   "strings"
-  "time"
   "strconv"
 )
-
-type Position struct {
-  row, col int
-}
-
-func (p Position) String() string {
-  if p.col == -1 {
-    return "nullPos"
-  }
-  cols := "abcdefgh"
-  return fmt.Sprintf("%c%d", cols[p.col], p.row+1)
-}
-
-func (p Position) isOnBoard() bool {
-  return 0 <= p.col && p.col <= 7 && 0 <= p.row && p.row <= 7
-}
-
-type Board struct {
-  whites, blacks map[Position]string
-  whiteToMove bool
-  availableCastles map[string]bool
-  enPassantSquare Position
-  halfMoveClock int
-  fullMoveNumber int
-}
-
-func (b *Board) getColoredPieces(white bool) map[Position]string {
-  if white {
-    return b.whites
-  }
-  return b.blacks
-}
-
-func (b *Board) hasColoredPieceThere(white bool, sq Position) bool {
-  pieces := b.getColoredPieces(white)
-  _, there := pieces[sq]
-  return there
-}
 
 var whiteSymbols = map[string]bool{
   "R": true,
@@ -125,26 +85,4 @@ func GeneratePositions(pos string) (map[Position]string, map[Position]string) {
       }
     }
     return whites, blacks
-}
-
-
-
-func main() {
-  // fen := "rnbqk1nr/ppp2ppp/8/2bpp3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 1 4"
-  fen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  start := time.Now()
-  b := GenerateBoard(fen)
-  // n := Knight{}
-  // n.isWhite = true
-  bish := Queen{}
-  bish.isWhite = true
-  res := bish.GetPseudoLegalMoves(Position{4,4}, &b)
-  // // fmt.Println(n.isWhite)
-  // res := n.GetPseudoLegalMoves(Position{0,0}, &b)
-  fmt.Println(Position{4,4})
-  fmt.Println(res)
-
-
-  t := time.Now()
-  fmt.Println(t.Sub(start))
 }
