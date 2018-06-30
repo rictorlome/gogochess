@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Chessboard</title>
+    <link rel="stylesheet" href="css/chessboard-0.3.0.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="js/chessboard-0.3.0.min.js"></script>
+  </head>
+  <body>
+    <div id="board-list"></div>
+  </body>
+
+  <script>
+    function getFromUrl(url, callback){
+      $.ajax({
+        url: `http://localhost:8080/${url}`,
+        method: 'get',
+        success: (r) => {
+          callback(JSON.parse(r));
+        },
+      })
+    }
+
+    function highlightColor(id, square, color) {
+      // const b = document.getElementById(id)
+      // const sq = b.getElementsByClassName(`square-${square}`)[0]
+      // sq.classList.add("highlight1-32417");
+      $(`#${id} [data-square=${square}]`).addClass(`highlight-${color}`)
+    }
+
+
+    function printAllNextMoves(response) {
+      response.forEach( (pieceMoves, idx) => {
+        const id = createBoardFromFen(pieceMoves['Fen'], idx);
+        highlightColor(id, pieceMoves['Square'], 'blue')
+        pieceMoves['NextMoves'].forEach( (sq) => {
+          highlightColor(id, sq, 'yellow')
+        });
+      });
+    }
+
+    function printAllBoards(response) {
+      const FenArr = response['FenArr']
+      FenArr.forEach( (fenString, idx) => {
+        createBoardFromFen(fenString, idx);
+      })
+    }
+    var onDragStart = function(source, piece, position, orientation) {
+      console.log("Drag started:");
+      console.log("Source: " + source);
+      console.log("Piece: " + piece);
+      console.log("Position: " + ChessBoard.objToFen(position));
+      console.log("Orientation: " + orientation);
+      console.log("--------------------");
+    };
+    function createBoardFromFen(fen, idx) {
+      var cfg = {
+        draggable: true,
+        position: fen,
+        onDragStart: onDragStart,
+        sparePieces: true
+      };
+      const bdiv = document.createElement("div");
+      bdiv.setAttribute("id", `board-${idx}`);
+      bdiv.setAttribute("style", "width: 200px");
+      $("#board-list").append(bdiv)
+      ChessBoard(document.getElementById(`board-${idx}`), cfg);
+      return `board-${idx}`;
+    }
+    // getFromUrl('GetFens', printAllBoards)
+    getFromUrl('GetMoves', printAllNextMoves)
+  </script>
+</html>
