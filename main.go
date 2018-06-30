@@ -23,4 +23,7 @@ func main() {
 
   t := time.Now()
   fmt.Println(t.Sub(start))
+
+  startServer()
+
 }
