@@ -1,5 +1,6 @@
 package main
 
+
 type Pawn struct {
   isWhite bool
 }
@@ -16,14 +17,14 @@ func (p *Pawn) ToString() string {
 }
 
 func (p *Pawn) hasMoved(pos Position) bool {
-  return (p.isWhite && pos.row == 1) || (!p.isWhite && pos.row == 6)
+  return (p.isWhite && pos.row != 1) || (!p.isWhite && pos.row != 6)
 }
 
 func (p *Pawn) GetAttackingSquares(pos Position, b *Board) []Position {
   var res []Position
   forwardDir := map[bool]int{
-    true: -1,
-    false: 1,
+    true: 1,
+    false: -1,
   }
   forwardSquare := Position{pos.row+forwardDir[p.isWhite], pos.col}
   //can capture opposite color (or empassant sq) if neighbors of above square
@@ -38,8 +39,8 @@ func (p *Pawn) GetAttackingSquares(pos Position, b *Board) []Position {
 func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   res := p.GetAttackingSquares(pos,b)
   forwardDir := map[bool]int{
-    true: -1,
-    false: 1,
+    true: 1,
+    false: -1,
   }
   //can advance one into empty square
   forwardSquare := Position{pos.row+forwardDir[p.isWhite], pos.col}
