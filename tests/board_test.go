@@ -33,7 +33,7 @@ func TestToPos(t *testing.T) {
 type fenPosPiece struct {
   fen string
   pos Position
-  piece string
+  piece Piece
 }
 
 func TestFindPiece(t *testing.T) {
@@ -41,33 +41,34 @@ func TestFindPiece(t *testing.T) {
     fenPosPiece {
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       Position{0,0},
-      "R",
+      &Rook{true},
     },
     fenPosPiece {
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       Position{7,7},
-      "r",
+      &Rook{false},
     },
     fenPosPiece {
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       Position{1,0},
-      "P",
+      &Pawn{true},
     },
     fenPosPiece {
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       Position{0,2},
-      "B",
+      &Bishop{true},
     },
     fenPosPiece {
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       Position{6,1},
-      "p",
+      &Pawn{false},
     },
   }
   for _, test := range(tests) {
     b := GenerateBoard(test.fen)
-    if test.piece != b.findPiece(test.pos) {
-        t.Error(fmt.Sprintf("Expected %v, got %v", test.piece, b.findPiece(test.pos)))
+    found, piece := b.findPiece(test.pos)
+    if !found || test.piece.ToString() != piece.ToString() {
+        t.Error(fmt.Sprintf("Expected %v, got %v", test.piece.ToString(), piece.ToString()))
     }
   }
 }

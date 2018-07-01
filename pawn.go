@@ -8,6 +8,13 @@ func (p *Pawn) IsWhite() bool {
   return p.isWhite
 }
 
+func (p *Pawn) ToString() string {
+  if p.isWhite {
+    return "P"
+  }
+  return "p"
+}
+
 func (p *Pawn) hasMoved(pos Position) bool {
   return (p.isWhite && pos.row == 1) || (!p.isWhite && pos.row == 6)
 }

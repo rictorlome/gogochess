@@ -4,6 +4,13 @@ type Knight struct {
   isWhite bool
 }
 
+func (n *Knight) ToString() string {
+  if n.isWhite {
+    return "N"
+  }
+  return "n"
+}
+
 func (n *Knight) IsWhite() bool {
   return n.isWhite
 }

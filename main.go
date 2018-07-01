@@ -12,7 +12,7 @@ func main() {
   b := GenerateBoard(fen)
   // n := Knight{}
   // n.isWhite = true
-  q := ToPiece()
+  q := ToPiece("Q")
   fmt.Println(Position{5,5})
   res := q.GetPseudoLegalMoves(Position{5,5}, &b)
   // // fmt.Println(n.isWhite)

@@ -62,21 +62,35 @@ func (b *Board) hasColoredPieceThere(white bool, sq Position) bool {
   return there
 }
 
-func ToPiece() Piece {
-  return &Queen{true}
+func ToPiece(s string) Piece {
+  var symbolToPiece = map[string]Piece{
+    "R": &Rook{true},
+    "N": &Knight{true},
+    "B": &Bishop{true},
+    "Q": &Queen{true},
+    "K": &King{true},
+    "P": &Pawn{true},
+    "r": &Rook{false},
+    "n": &Knight{false},
+    "b": &Bishop{false},
+    "q": &Queen{false},
+    "k": &King{false},
+    "p": &Pawn{false},
+  }
+  return symbolToPiece[s]
 }
 
 
-func (b *Board) findPiece(p Position) string {
+func (b *Board) findPiece(p Position) (bool, Piece) {
   for k, v := range(b.whites) {
     if k == p {
-      return v
+      return true, ToPiece(v)
     }
   }
   for k, v := range(b.blacks) {
     if k == p {
-      return v
+      return true, ToPiece(v)
     }
   }
-  return "-1,-1"
+  return false, nil
 }

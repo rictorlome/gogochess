@@ -8,6 +8,13 @@ func (k *King) IsWhite() bool {
   return k.isWhite
 }
 
+func (k *King) ToString() string {
+  if k.isWhite {
+    return "K"
+  }
+  return "k"
+}
+
 func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
   var res []Position
   nums := []int{-1,0,1}

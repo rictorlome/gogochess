@@ -28,6 +28,13 @@ type Bishop struct {
   isWhite bool
 }
 
+func (b *Bishop) ToString() string {
+  if b.isWhite {
+    return "B"
+  }
+  return "b"
+}
+
 func (b *Bishop) IsWhite() bool {
   return b.isWhite
 }
@@ -46,6 +53,13 @@ func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
 
 type Rook struct {
   isWhite bool
+}
+
+func (r *Rook) ToString() string {
+  if r.isWhite {
+    return "R"
+  }
+  return "r"
 }
 
 func (r *Rook) IsWhite() bool {
@@ -67,6 +81,13 @@ func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
 
 type Queen struct {
   isWhite bool
+}
+
+func (q *Queen) ToString() string {
+  if q.isWhite {
+    return "Q"
+  }
+  return "q"
 }
 
 func (q *Queen) IsWhite() bool {
