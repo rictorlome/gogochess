@@ -2,7 +2,10 @@ package main
 
 type King struct {
   isWhite bool
-  DifferentIfMoved
+}
+
+func (k *King) IsWhite() bool {
+  return k.isWhite
 }
 
 func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
@@ -23,5 +26,17 @@ func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
 //Temporary...
 func (k *King) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   minusCastles := k.GetAttackingSquares(pos, b)
+  // kingside, queenside := "bk", "bq"
+  // queensquare, kingsquare := Position{7,0}, Position{7,7}
+  // if k.isWhite {
+  //   kingside, queenside = "wk", "wq"
+  //   queensquare, kingsquare = Position{0,0}, Position{0,7}
+  // }
+  //condition for castle is:
+  //king has not moved
+  //rook has not moved
+  //intermediate squares are empty
+  //king not in check, king not passing through check
+
   return minusCastles
 }

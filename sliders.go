@@ -1,26 +1,22 @@
 // This file covers bishop, rook, and queen
 package main
 
-type Slider struct {
-  isWhite bool
-  moveDiffs [][]int
-}
 
-func (s *Slider) slide(moveDiffs [][]int, pos Position, b *Board) []Position {
+func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) []Position {
   var res []Position
   OUTER:
   for _, moveDiff := range(moveDiffs) {
     for i := 1; i <= SIZE; i++ {
       newPos := Position{pos.row + moveDiff[0] * i, pos.col + moveDiff[1] * i}
       // Cannot capture own piece
-      if b.hasColoredPieceThere(s.isWhite, newPos) {
+      if b.hasColoredPieceThere(isWhite, newPos) {
         continue OUTER
       }
       if newPos.isOnBoard() {
         res = append(res, newPos)
       }
       // Cannot slide beyond captured piece of opposite color
-      if b.hasColoredPieceThere(!s.isWhite, newPos) {
+      if b.hasColoredPieceThere(!isWhite, newPos) {
         continue OUTER
       }
     }
@@ -29,7 +25,11 @@ func (s *Slider) slide(moveDiffs [][]int, pos Position, b *Board) []Position {
 }
 
 type Bishop struct {
-  Slider
+  isWhite bool
+}
+
+func (b *Bishop) IsWhite() bool {
+  return b.isWhite
 }
 
 func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) []Position {
@@ -37,7 +37,7 @@ func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) []Position {
       []int{1,1}, []int{-1,-1},
       []int{-1,1}, []int{1,-1},
   }
-  return bish.slide(moveDiffs, pos, b)
+  return slide(bish.isWhite, moveDiffs, pos, b)
 }
 
 func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
@@ -45,8 +45,11 @@ func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
 }
 
 type Rook struct {
-  Slider
-  DifferentIfMoved
+  isWhite bool
+}
+
+func (r *Rook) IsWhite() bool {
+  return r.isWhite
 }
 
 func (r *Rook) GetAttackingSquares(pos Position, b *Board) []Position {
@@ -54,7 +57,7 @@ func (r *Rook) GetAttackingSquares(pos Position, b *Board) []Position {
       []int{1,0}, []int{0,1},
       []int{-1,0}, []int{0,-1},
   }
-  return r.slide(moveDiffs, pos, b)
+  return slide(r.isWhite, moveDiffs, pos, b)
 }
 
 
@@ -63,7 +66,11 @@ func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
 }
 
 type Queen struct {
-  Slider
+  isWhite bool
+}
+
+func (q *Queen) IsWhite() bool {
+  return q.isWhite
 }
 
 func (q *Queen) GetAttackingSquares(pos Position, b *Board) []Position {
@@ -73,7 +80,7 @@ func (q *Queen) GetAttackingSquares(pos Position, b *Board) []Position {
       []int{1,1}, []int{-1,-1},
       []int{-1,1}, []int{1,-1},
   }
-  return q.slide(moveDiffs, pos, b)
+  return slide(q.isWhite, moveDiffs, pos, b)
 }
 
 func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {

@@ -2,10 +2,17 @@ package main
 
 import (
   "fmt"
+  "strings"
 )
 
 type Position struct {
   row, col int
+}
+
+func ToPos(s string) Position {
+  cols := "abcdefgh"
+  r := int(s[1] - '0') - 1
+  return Position{r, strings.Index(cols,s[0:1])}
 }
 
 func (p Position) String() string {
@@ -53,4 +60,23 @@ func (b *Board) hasColoredPieceThere(white bool, sq Position) bool {
   pieces := b.getColoredPieces(white)
   _, there := pieces[sq]
   return there
+}
+
+func ToPiece() Piece {
+  return &Queen{true}
+}
+
+
+func (b *Board) findPiece(p Position) string {
+  for k, v := range(b.whites) {
+    if k == p {
+      return v
+    }
+  }
+  for k, v := range(b.blacks) {
+    if k == p {
+      return v
+    }
+  }
+  return "-1,-1"
 }

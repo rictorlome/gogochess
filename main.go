@@ -12,9 +12,9 @@ func main() {
   b := GenerateBoard(fen)
   // n := Knight{}
   // n.isWhite = true
-  bish := Queen{}
-  bish.isWhite = true
-  res := bish.GetPseudoLegalMoves(Position{5,5}, &b)
+  q := ToPiece()
+  fmt.Println(Position{5,5})
+  res := q.GetPseudoLegalMoves(Position{5,5}, &b)
   // // fmt.Println(n.isWhite)
   // res := n.GetPseudoLegalMoves(Position{0,0}, &b)
   fmt.Println(Position{5,5}.getNeighbors())

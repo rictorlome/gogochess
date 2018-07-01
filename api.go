@@ -50,18 +50,25 @@ func GetFensEndpoint(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(fens)
 }
 
+func GetPieceMoves(fen string, sq string, piece Queen) PieceMoves {
+  b := GenerateBoard(fen)
+  pos := ToPos(sq)
+  // piece := b.findPiece(pos)
+  moves := piece.GetPseudoLegalMoves(pos, &b)
+  var sqs []string
+  for _, move := range(moves) {
+    sqs = append(sqs, move.String())
+  }
+  return PieceMoves {
+    fen, sq, sqs,
+  }
+}
+
 func GetNextMoves(w http.ResponseWriter, r *http.Request) {
+  q := Queen{}
+  q.isWhite = true
   pmt := []PieceMoves {
-    PieceMoves {
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "d5",
-      []string {"d6", "d4", "c8"},
-    },
-    PieceMoves {
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "d3",
-      []string {"d1", "d3", "f7"},
-    },
+      GetPieceMoves("rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1", "d5", q),
   }
   json.NewEncoder(w).Encode(pmt)
 }

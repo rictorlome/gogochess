@@ -2,7 +2,14 @@ package main
 
 type Pawn struct {
   isWhite bool
-  DifferentIfMoved
+}
+
+func (p *Pawn) IsWhite() bool {
+  return p.isWhite
+}
+
+func (p *Pawn) hasMoved(pos Position) bool {
+  return (p.isWhite && pos.row == 1) || (!p.isWhite && pos.row == 6)
 }
 
 func (p *Pawn) GetAttackingSquares(pos Position, b *Board) []Position {
@@ -34,7 +41,7 @@ func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   }
   //if has not moved, can advance two through empty into empty
   twoUp := Position{forwardSquare.row+forwardDir[p.isWhite], forwardSquare.col}
-  if !p.hasMoved && forwardSquare.isEmpty(b) && twoUp.isEmpty(b) {
+  if !p.hasMoved(pos) && forwardSquare.isEmpty(b) && twoUp.isEmpty(b) {
     res = append(res, twoUp)
   }
   return res

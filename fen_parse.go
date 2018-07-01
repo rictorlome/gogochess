@@ -45,7 +45,7 @@ func GenerateBoard(fen string) Board {
 
 func SetAvailableCastles(avail string) map[string]bool {
   return map[string]bool {
-     "bk" : strings.Contains(avail, "k"),
+     "bk": strings.Contains(avail, "k"),
      "bq": strings.Contains(avail, "q"),
      "wk": strings.Contains(avail, "K"),
      "wq": strings.Contains(avail, "Q"),

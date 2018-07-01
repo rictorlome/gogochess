@@ -4,6 +4,10 @@ type Knight struct {
   isWhite bool
 }
 
+func (n *Knight) IsWhite() bool {
+  return n.isWhite
+}
+
 func (n *Knight) GetAttackingSquares(pos Position, b *Board) []Position {
   var res []Position
   moveDiffs := [][]int{
