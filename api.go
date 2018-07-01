@@ -73,6 +73,9 @@ func GetNextMoves(w http.ResponseWriter, r *http.Request) {
       GetPieceMoves("rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1", "e4"),
       GetPieceMoves("rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1", "b7"),
       GetPieceMoves("rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1", "f1"),
+      GetPieceMoves("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 1", "e5"),
+      GetPieceMoves("rnb1kb1r/ppp1p1pp/3q1n2/3pPp2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 1", "e5"),
+      // GetPieceMoves("r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 0 1", "e1"),
   }
   json.NewEncoder(w).Encode(pmt)
 }

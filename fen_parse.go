@@ -56,7 +56,7 @@ func SetEnpassantSquare(algebraic string) Position {
   row, col := -1, -1
   if len(algebraic) == 2 {
     cols := "abcdefgh"
-    row = int(algebraic[1]) - 1
+    row = int(algebraic[1] - '0') - 1
     col = strings.Index(cols, string(algebraic[0]))
   }
   return Position{row,col}

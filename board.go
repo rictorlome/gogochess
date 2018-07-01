@@ -49,6 +49,13 @@ type Board struct {
   fullMoveNumber int
 }
 
+// func (b *Board) getAllSquaresAttackedBy(isWhite bool) map[Position]Piece {
+//   pieces := b.blacks
+//   if isWhite {
+//     pieces := b.whites
+//   }
+// }
+
 func (b *Board) getColoredPieces(white bool) map[Position]string {
   if white {
     return b.whites

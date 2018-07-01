@@ -32,7 +32,7 @@
 
     function printAllNextMoves(response) {
       response.forEach( (pieceMoves, idx) => {
-        console.log( `TestCasePseudoMoves{"${pieceMoves['Fen']}", "${pieceMoves['Square']}", []string{ ${pieceMoves['NextMoves'].map( (el) => '"' + el + '", ').join(' ') } }"}`)
+        console.log( `TestCasePseudoMoves{"${pieceMoves['Fen']}", "${pieceMoves['Square']}", []string{ ${pieceMoves['NextMoves'].map( (el) => '"' + el + '", ').join(' ') } }},`)
         const id = createBoardFromFen(pieceMoves['Fen'], idx);
         highlightColor(id, pieceMoves['Square'], 'blue')
         pieceMoves['NextMoves'].forEach( (sq) => {

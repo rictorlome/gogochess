@@ -108,7 +108,7 @@ func TestRestOfGenerateBoard(t *testing.T) {
       if b.enPassantSquare.col != strings.Index("abcdefgh", string(enPassantSquare[0])) {
         t.Error(fmt.Sprintf("Expected en passant square on %s col, got the %d'th", string(enPassantSquare[0]), b.enPassantSquare.col))
       }
-      if b.enPassantSquare.row != int(enPassantSquare[1]) - 1 {
+      if b.enPassantSquare.row != int(enPassantSquare[1] - '0') - 1 {
         t.Error(fmt.Sprintf("Expected en passant square on %d row, got the %d'th", enPassantSquare[1], b.enPassantSquare.row))
       }
     }
