@@ -41,7 +41,7 @@ func (p Position) getNeighbors() []Position {
 }
 
 type Board struct {
-  whites, blacks map[Position]string
+  whites, blacks map[Position]Piece
   whiteToMove bool
   availableCastles map[string]bool
   enPassantSquare Position
@@ -56,7 +56,7 @@ type Board struct {
 //   }
 // }
 
-func (b *Board) getColoredPieces(white bool) map[Position]string {
+func (b *Board) getColoredPieces(white bool) map[Position]Piece {
   if white {
     return b.whites
   }
@@ -89,14 +89,14 @@ func ToPiece(s string) Piece {
 
 
 func (b *Board) findPiece(p Position) (bool, Piece) {
-  for k, v := range(b.whites) {
-    if k == p {
-      return true, ToPiece(v)
+  for pos, piece := range(b.whites) {
+    if pos == p {
+      return true, piece
     }
   }
-  for k, v := range(b.blacks) {
-    if k == p {
-      return true, ToPiece(v)
+  for pos, piece:= range(b.blacks) {
+    if pos == p {
+      return true, piece
     }
   }
   return false, nil

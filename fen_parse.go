@@ -62,25 +62,25 @@ func SetEnpassantSquare(algebraic string) Position {
   return Position{row,col}
 }
 
-func GeneratePositions(pos string) (map[Position]string, map[Position]string) {
+func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece) {
     rows := strings.Split(pos, "/")
-    whites := make(map[Position]string)
-    blacks := make(map[Position]string)
+    whites := make(map[Position]Piece)
+    blacks := make(map[Position]Piece)
 
     for i, row := range rows {
       offset := 0
       for j, sq := range row {
-        _, white := whiteSymbols[string(sq)]
-        _, black := blackSymbols[string(sq)]
-        switch {
-        case white:
-          whites[Position{7-i,j+offset}] = string(sq)
-        case black:
-          blacks[Position{7-i,j+offset}] = string(sq)
-        default:
+        piece := ToPiece(string(sq))
+        if piece == nil {
           // This gives the numeric value of the rune(ie '56' to the int 8)
           // Minus one because the offset number takes up a square itself
           offset += int(sq - '0') - 1
+        } else {
+          if piece.IsWhite() {
+            whites[Position{7-i,j+offset}] = piece
+          } else  {
+            blacks[Position{7-i,j+offset}] = piece
+          }
         }
       }
     }

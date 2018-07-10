@@ -23,9 +23,6 @@
     }
 
     function highlightColor(id, square, color) {
-      // const b = document.getElementById(id)
-      // const sq = b.getElementsByClassName(`square-${square}`)[0]
-      // sq.classList.add("highlight1-32417");
       $(`#${id} [data-square=${square}]`).addClass(`highlight-${color}`)
     }
 

@@ -11,28 +11,28 @@ type testpair struct {
   FEN string
 }
 
-var fenPieceToObj = map[string]string {
-  "R": "wR",
-  "N": "wN",
-  "B": "wB",
-  "Q": "wQ",
-  "K": "wK",
-  "P": "wP",
-  "r": "bR",
-  "n": "bN",
-  "b": "bB",
-  "q": "bQ",
-  "k": "bK",
-  "p": "bP",
+var jsonStringToPiece = map[string]Piece {
+  "wR": &Rook{true},
+  "wN": &Knight{true},
+  "wB": &Bishop{true},
+  "wQ": &Queen{true},
+  "wK": &King{true},
+  "wP": &Pawn{true},
+  "bR": &Rook{false},
+  "bN": &Knight{false},
+  "bB": &Bishop{false},
+  "bQ": &Queen{false},
+  "bK": &King{false},
+  "bP": &Pawn{false},
 }
 
-func jsonToMap(s string) map[string]string {
+func jsonToBoard(s string) map[Position]Piece {
   posToPieces := strings.Split(s, ",")
-  resMap := make(map[string]string)
+  resMap := make(map[Position]Piece)
   for _, posToPiece := range posToPieces {
     posAndPiece := strings.Split(posToPiece, ":")
-    pos, piece := posAndPiece[0], posAndPiece[1]
-    resMap[pos] = piece
+    posString, jsonString := posAndPiece[0], posAndPiece[1]
+    resMap[ToPos(posString)] = jsonStringToPiece[jsonString]
   }
   return resMap
 }
@@ -60,18 +60,18 @@ var tests = []testpair{
 func TestPositions(t *testing.T) {
   for _, pair := range tests {
     b := GenerateBoard(pair.FEN)
-    resMap := jsonToMap(pair.jsonPosition)
+    resMap := jsonToBoard(pair.jsonPosition)
     if len(resMap) != len(b.whites) + len(b.blacks) {
       t.Error("Incorrect number of pieces. Expected ", len(resMap))
     }
     for pos, piece := range b.whites {
-      if fenPieceToObj[piece] != resMap[pos.String()] {
-        t.Error(fmt.Sprintf("Expected %s on %s, got %s", resMap[pos.String()], pos.String(), fenPieceToObj[piece]))
+      if piece.ToString() != resMap[pos].ToString() {
+        t.Error(fmt.Sprintf("Expected %s on %s, got %s", resMap[pos].ToString(), pos.String(), piece.ToString()))
       }
     }
     for pos, piece := range b.blacks {
-      if fenPieceToObj[piece] != resMap[pos.String()] {
-        t.Error(fmt.Sprintf("Expected %s on %s, got %s", resMap[pos.String()], pos.String(), fenPieceToObj[piece]))
+      if piece.ToString() != resMap[pos].ToString() {
+        t.Error(fmt.Sprintf("Expected %s on %s, got %s", resMap[pos].ToString(), pos.String(), piece.ToString()))
       }
     }
   }
