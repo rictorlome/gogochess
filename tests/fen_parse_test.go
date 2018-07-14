@@ -74,6 +74,13 @@ func TestPositions(t *testing.T) {
         t.Error(fmt.Sprintf("Expected %s on %s, got %s", resMap[pos].ToString(), pos.String(), piece.ToString()))
       }
     }
+    // Test king positions
+    if resMap[b.whiteKing].ToString() != "K" {
+      t.Error(fmt.Sprintf("Expected White King on %s, got %s", resMap[b.whiteKing].ToString(), b.whiteKing.String()))
+    }
+    if resMap[b.blackKing].ToString() != "k" {
+      t.Error(fmt.Sprintf("Expected Black King on %s, got %s", resMap[b.blackKing].ToString(), b.blackKing.String()))
+    }
   }
 }
 

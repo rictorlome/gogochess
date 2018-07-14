@@ -72,3 +72,34 @@ func TestFindPiece(t *testing.T) {
     }
   }
 }
+
+type fenCheck struct {
+  fen string
+  whiteCheck, blackCheck bool
+}
+
+func TestCheck(t *testing.T) {
+  tests := []fenCheck{
+    fenCheck{
+      "rnbqk1nr/ppp2ppp/4p3/3p4/1b1P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1", true, false,
+    },
+    fenCheck{
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", false, false,
+    },
+    fenCheck{
+      "rnbqk1nr/ppp3pp/4pp2/3p2B1/Qb1P4/2P5/PP2PPPP/RN2KBNR b KQkq - 0 1", false, true,
+    },
+  }
+  for _, test := range(tests) {
+    b := GenerateBoard(test.fen)
+    if b.inCheck(true) != test.whiteCheck {
+      t.Error(fmt.Sprintf("Expected white check to be %v, got %v", test.whiteCheck, b.inCheck(true)))
+    }
+    if b.inCheck(false) != test.blackCheck {
+      t.Error(fmt.Sprintf("Expected black check to be %v, got %v", test.blackCheck, b.inCheck(false)))
+    }
+    if b.inCheck(false) && b.inCheck(true) {
+      t.Error(fmt.Sprintf("Both players in check? Look at this position: %v", test.fen))
+    }
+  }
+}

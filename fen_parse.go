@@ -5,28 +5,11 @@ import (
   "strconv"
 )
 
-var whiteSymbols = map[string]bool{
-  "R": true,
-  "N": true,
-  "B": true,
-  "Q": true,
-  "K": true,
-  "P": true,
-}
-var blackSymbols = map[string]bool{
-  "r": true,
-  "n": true,
-  "b": true,
-  "q": true,
-  "k": true,
-  "p": true,
-}
-
 func GenerateBoard(fen string) Board {
   b := Board{}
   fields := strings.Split(fen, " ")
 
-  b.whites, b.blacks = GeneratePositions(fields[0])
+  b.whites, b.blacks, b.whiteKing, b.blackKing = GeneratePositions(fields[0])
   b.whiteToMove = (fields[1] == "w")
   b.availableCastles = SetAvailableCastles(fields[2])
   b.enPassantSquare = SetEnpassantSquare(fields[3])
@@ -62,11 +45,11 @@ func SetEnpassantSquare(algebraic string) Position {
   return Position{row,col}
 }
 
-func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece) {
+func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece, Position, Position) {
     rows := strings.Split(pos, "/")
     whites := make(map[Position]Piece)
     blacks := make(map[Position]Piece)
-
+    var whiteKing, blackKing Position
     for i, row := range rows {
       offset := 0
       for j, sq := range row {
@@ -76,13 +59,20 @@ func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece) {
           // Minus one because the offset number takes up a square itself
           offset += int(sq - '0') - 1
         } else {
+          pos := Position{7-i,j+offset}
           if piece.IsWhite() {
-            whites[Position{7-i,j+offset}] = piece
+            whites[pos] = piece
+            if piece.ToString() == "K" {
+              whiteKing = pos
+            }
           } else  {
-            blacks[Position{7-i,j+offset}] = piece
+            blacks[pos] = piece
+            if piece.ToString() == "k" {
+              blackKing = pos
+            }
           }
         }
       }
     }
-    return whites, blacks
+    return whites, blacks, whiteKing, blackKing
 }

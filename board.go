@@ -5,6 +5,21 @@ import (
   "strings"
 )
 
+var symbolToPiece = map[string]Piece{
+  "R": &Rook{true},
+  "N": &Knight{true},
+  "B": &Bishop{true},
+  "Q": &Queen{true},
+  "K": &King{true},
+  "P": &Pawn{true},
+  "r": &Rook{false},
+  "n": &Knight{false},
+  "b": &Bishop{false},
+  "q": &Queen{false},
+  "k": &King{false},
+  "p": &Pawn{false},
+}
+
 type Position struct {
   row, col int
 }
@@ -42,6 +57,8 @@ func (p Position) getNeighbors() []Position {
 
 type Board struct {
   whites, blacks map[Position]Piece
+  whiteKing Position
+  blackKing Position
   whiteToMove bool
   availableCastles map[string]bool
   enPassantSquare Position
@@ -49,18 +66,18 @@ type Board struct {
   fullMoveNumber int
 }
 
-// func (b *Board) getAllSquaresAttackedBy(isWhite bool) map[Position]Piece {
-//   pieces := b.blacks
-//   if isWhite {
-//     pieces := b.whites
-//   }
-// }
-
 func (b *Board) getColoredPieces(white bool) map[Position]Piece {
   if white {
     return b.whites
   }
   return b.blacks
+}
+
+func (b *Board) getColoredKing(white bool) Position {
+  if white {
+    return b.whiteKing
+  }
+  return b.blackKing
 }
 
 func (b *Board) hasColoredPieceThere(white bool, sq Position) bool {
@@ -70,21 +87,21 @@ func (b *Board) hasColoredPieceThere(white bool, sq Position) bool {
 }
 
 func ToPiece(s string) Piece {
-  var symbolToPiece = map[string]Piece{
-    "R": &Rook{true},
-    "N": &Knight{true},
-    "B": &Bishop{true},
-    "Q": &Queen{true},
-    "K": &King{true},
-    "P": &Pawn{true},
-    "r": &Rook{false},
-    "n": &Knight{false},
-    "b": &Bishop{false},
-    "q": &Queen{false},
-    "k": &King{false},
-    "p": &Pawn{false},
-  }
   return symbolToPiece[s]
+}
+
+func (b *Board) inCheck(white bool) bool {
+  kingPos := b.getColoredKing(white)
+  attackingPieces := b.getColoredPieces(!white)
+  for pos, piece := range(attackingPieces) {
+    attackingSquares := piece.GetAttackingSquares(pos, b)
+    for _, sq := range(attackingSquares) {
+      if kingPos == sq {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 
