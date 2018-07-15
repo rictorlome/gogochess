@@ -10,16 +10,6 @@ import (
   "github.com/gorilla/mux"
 )
 
-func RootEndpoint(w http.ResponseWriter, r *http.Request) {
-  r.ParseForm()
-  fmt.Println(r.Form)
-  for k, v := range r.Form {
-    fmt.Println("key: ", k)
-    fmt.Println("val: ", v)
-    w.Write([]byte(k))
-  }
-}
-
 var fens = []string{"rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
       "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
       "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
@@ -33,7 +23,7 @@ func TestEndpoint(w http.ResponseWriter, r *http.Request) {
   case "GET":
     json.NewEncoder(w).Encode(fens)
   case "POST":
-    PostNextMoves(w, r)
+    HandleTestPost(w, r)
   default:
     fmt.Println("OTHER")
   }
@@ -56,6 +46,14 @@ func GetPieceMoves(fen string, sq string) PieceMoves {
   }
   return PieceMoves {
     fen, sq, sqs,
+  }
+}
+
+func HandleTestPost(w http.ResponseWriter, r *http.Request) {
+  r.ParseForm()
+  switch r.Form["PostType"][0] {
+  case "NextMoves":
+    PostNextMoves(w,r)
   }
 }
 
@@ -88,7 +86,6 @@ func startServer() {
   headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
   methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
   origins := handlers.AllowedOrigins([]string{"*"})
-  router.HandleFunc("/", RootEndpoint).Methods("POST")
   router.HandleFunc("/tests", TestEndpoint).Methods("GET","POST")
   router.HandleFunc("/GetMoves", GetNextMoves).Methods("GET")
   if err := http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(router)); err != nil {

@@ -52,7 +52,7 @@
     function printAllNextMoves(response) {
       response.forEach( (pieceMoves, idx) => {
         console.log( `TestCasePseudoMoves{"${pieceMoves['Fen']}", "${pieceMoves['Square']}", []string{ ${pieceMoves['NextMoves'].map( (el) => '"' + el + '", ').join(' ') } }},`)
-        const id = createBoardFromFen(pieceMoves['Fen'], idx);
+        createBoardFromFen(pieceMoves['Fen'], idx);
         highlightNextMoves(idx, pieceMoves['Square'], pieceMoves['NextMoves'])
       });
     }
@@ -75,7 +75,7 @@
         position: fen,
         onDragStart: (source, piece, position, orientation) => {
           onDragStart(source, piece, position, orientation)
-          postToUrl('tests', {id: idx, square: source}, (r) => {
+          postToUrl('tests', {id: idx, square: source, PostType: "NextMoves"}, (r) => {
             removeHighlighting(idx)
             highlightNextMoves(idx, r.Square, r.NextMoves)
           })

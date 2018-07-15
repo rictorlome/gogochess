@@ -106,15 +106,47 @@ func (b *Board) inCheck(white bool) bool {
 
 
 func (b *Board) findPiece(p Position) (bool, Piece) {
-  for pos, piece := range(b.whites) {
-    if pos == p {
-      return true, piece
-    }
+  piece := b.whites[p]
+  if piece != nil {
+    return true, piece
   }
-  for pos, piece:= range(b.blacks) {
-    if pos == p {
-      return true, piece
-    }
+  piece = b.blacks[p]
+  if piece != nil {
+    return true, piece
   }
   return false, nil
+}
+// Accepts UCI move format.
+func parseMove(s string) (start Position, end Position, promotion string) {
+  start = ToPos(s[0:2])
+  end = ToPos(s[2:4])
+  promotion = ""
+  if len(s) == 5 {
+    promotion = string(s[4])
+  }
+  return
+}
+
+func (b *Board) naiveMove(start Position, end Position, promotion string) {
+  _, piece := b.findPiece(start)
+  if piece.IsWhite() {
+    delete(b.whites, start)
+    b.whites[end] = piece
+  } else {
+    delete(b.blacks, start)
+    b.blacks[end] = piece
+  }
+}
+
+func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) bool {
+  _, piece := b.findPiece(start)
+  occupied, target := b.findPiece(end)
+  b.naiveMove(start,end,promotion)
+  check := b.inCheck(piece.IsWhite())
+  b.naiveMove(end,start,promotion)
+  if occupied {
+    pieces := b.getColoredPieces(!piece.IsWhite())
+    pieces[end] = target
+  }
+  return check
 }
