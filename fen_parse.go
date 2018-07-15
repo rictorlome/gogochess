@@ -76,3 +76,60 @@ func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece, Posi
     }
     return whites, blacks, whiteKing, blackKing
 }
+
+func (b *Board) GenerateFen() string {
+  var fenArr []string
+  //position string
+  fenArr = append(fenArr, b.GenerateFenPositionString())
+  if b.whiteToMove {
+    fenArr = append(fenArr, "w")
+  } else {
+    fenArr = append(fenArr, "b")
+  }
+  fenArr = append(fenArr, b.GenerateCastleString())
+  fenArr = append(fenArr, b.enPassantSquare.String())
+  fenArr = append(fenArr, strconv.Itoa(b.halfMoveClock))
+  fenArr = append(fenArr, strconv.Itoa(b.fullMoveNumber))
+  return strings.Join(fenArr, " ")
+}
+
+func (b *Board) GenerateCastleString() string {
+  var castleString string
+  if b.availableCastles["wk"] { castleString += "K"}
+  if b.availableCastles["wq"] { castleString += "Q"}
+  if b.availableCastles["bk"] { castleString += "k"}
+  if b.availableCastles["bq"] { castleString += "q"}
+  return castleString
+}
+
+func (b *Board) GenerateFenPositionString() string{
+  var grid [8][8]string
+  var fenArr []string
+  for pos, piece := range b.whites {
+    grid[pos.row][pos.col] = piece.ToString()
+  }
+  for pos, piece := range b.blacks {
+    grid[pos.row][pos.col] = piece.ToString()
+  }
+  for _, row := range grid {
+    fenString := ""
+    offset := 0
+    for _, sq := range row {
+      if sq == "" {
+        offset += 1
+      } else {
+        if offset == 0 {
+          fenString += sq
+        } else {
+          fenString += strconv.Itoa(offset) + sq
+          offset = 0
+        }
+      }
+    }
+    if offset != 0 {
+      fenString += strconv.Itoa(offset)
+    }
+    fenArr = append(fenArr,fenString)
+  }
+  return strings.Join(fenArr, "/")
+}

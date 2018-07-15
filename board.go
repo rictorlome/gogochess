@@ -32,7 +32,7 @@ func ToPos(s string) Position {
 
 func (p Position) String() string {
   if p.col == -1 {
-    return "nullPos"
+    return "-"
   }
   cols := "abcdefgh"
   return fmt.Sprintf("%c%d", cols[p.col], p.row+1)

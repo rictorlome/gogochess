@@ -11,9 +11,9 @@ func main() {
   // fen := "rnbqk1nr/ppp2ppp/4p3/3p4/1b1P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1"
   start := time.Now()
   b := GenerateBoard(fen)
-  fmt.Println(b.wouldCauseCheck(parseMove("e2e4")))
+  fmt.Println(b.GenerateFen())
   // fmt.Println(b.whites[ToPos("e4")])
-  startServer()
+  // startServer()
 
 
   t := time.Now()
