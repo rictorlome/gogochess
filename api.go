@@ -2,22 +2,13 @@ package main
 
 import (
   "net/http"
-  "strings"
   "fmt"
   "encoding/json"
+  "strconv"
 
   "github.com/gorilla/handlers"
   "github.com/gorilla/mux"
 )
-
-func sayHello(w http.ResponseWriter, r *http.Request) {
-  message := r.URL.Path
-  message = strings.TrimPrefix(message, "/")
-  fmt.Println(message)
-  fmt.Println(message)
-
-  w.Write([]byte(message))
-}
 
 func RootEndpoint(w http.ResponseWriter, r *http.Request) {
   r.ParseForm()
@@ -29,25 +20,29 @@ func RootEndpoint(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-type ManyFens struct {
-  FenArr []string
+var fens = []string{"rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
+      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
+      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
+      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
+      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
+      "rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 1",
+      "rnb1kb1r/ppp1p1pp/3q1n2/3pPp2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 1",}
+
+func TestEndpoint(w http.ResponseWriter, r *http.Request) {
+  switch r.Method {
+  case "GET":
+    json.NewEncoder(w).Encode(fens)
+  case "POST":
+    PostNextMoves(w, r)
+  default:
+    fmt.Println("OTHER")
+  }
 }
 
 type PieceMoves struct {
   Fen string
   Square string
   NextMoves []string
-}
-
-
-func GetFensEndpoint(w http.ResponseWriter, r *http.Request) {
-  fens := ManyFens {
-    []string {
-      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-      "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
-    },
-  }
-  json.NewEncoder(w).Encode(fens)
 }
 
 func GetPieceMoves(fen string, sq string) PieceMoves {
@@ -64,7 +59,15 @@ func GetPieceMoves(fen string, sq string) PieceMoves {
   }
 }
 
-func GetNextMoves(w http.ResponseWriter, r *http.Request) {
+func PostNextMoves(w http.ResponseWriter, r *http.Request) {
+  r.ParseForm()
+  id, _ := strconv.Atoi(r.Form["id"][0])
+  requestedFen := fens[id]
+  NextMoves := GetPieceMoves(requestedFen, r.Form["square"][0])
+  json.NewEncoder(w).Encode(NextMoves)
+}
+
+ func GetNextMoves(w http.ResponseWriter, r *http.Request) {
   q := Queen{}
   q.isWhite = true
   pmt := []PieceMoves {
@@ -86,7 +89,7 @@ func startServer() {
   methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
   origins := handlers.AllowedOrigins([]string{"*"})
   router.HandleFunc("/", RootEndpoint).Methods("POST")
-  router.HandleFunc("/GetFens", GetFensEndpoint).Methods("GET")
+  router.HandleFunc("/tests", TestEndpoint).Methods("GET","POST")
   router.HandleFunc("/GetMoves", GetNextMoves).Methods("GET")
   if err := http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(router)); err != nil {
     panic(err)
