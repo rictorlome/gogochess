@@ -45,15 +45,23 @@
     }
     function highlightNextMoves(id, square, nextMoves) {
       highlightColor(id, square, 'blue')
-      nextMoves.forEach( (sq) => highlightColor(id, sq, 'yellow'))
+      nextMoves = nextMoves || []
+      nextMoves.forEach( ({Move, WouldCauseCheck}) => {
+        if (WouldCauseCheck) {
+          highlightColor(id, Move, 'red')
+        } else {
+          highlightColor(id, Move, 'yellow')
+        }
+      })
     }
 
 
     function printAllNextMoves(response) {
       response.forEach( (pieceMoves, idx) => {
-        console.log( `TestCasePseudoMoves{"${pieceMoves['Fen']}", "${pieceMoves['Square']}", []string{ ${pieceMoves['NextMoves'].map( (el) => '"' + el + '", ').join(' ') } }},`)
+        const moves = pieceMoves.Moves || [];
+        console.log( `TestCasePseudoMoves{"${pieceMoves['Fen']}", "${pieceMoves['Square']}", []string{ ${moves.map( ({Move, WouldCauseCheck}) => '"' + Move + '", ').join(' ') } }},`)
         createBoardFromFen(pieceMoves['Fen'], idx);
-        highlightNextMoves(idx, pieceMoves['Square'], pieceMoves['NextMoves'])
+        highlightNextMoves(idx, pieceMoves['Square'], moves)
       });
     }
 
@@ -77,7 +85,7 @@
           onDragStart(source, piece, position, orientation)
           postToUrl('tests', {id: idx, square: source, PostType: "NextMoves"}, (r) => {
             removeHighlighting(idx)
-            highlightNextMoves(idx, r.Square, r.NextMoves)
+            highlightNextMoves(idx, r.Square, r.Moves)
           })
         },
         sparePieces: true
@@ -90,7 +98,7 @@
       return `board-${idx}`;
     }
     // getFromUrl('GetFens', printAllBoards)
-    // getFromUrl('GetMoves', printAllNextMoves)
-    getFromUrl('tests', printAllBoards)
+    getFromUrl('GetMoves', printAllNextMoves)
+    // getFromUrl('tests', printAllBoards)
   </script>
 </html>

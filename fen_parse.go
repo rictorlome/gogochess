@@ -106,10 +106,10 @@ func (b *Board) GenerateFenPositionString() string{
   var grid [8][8]string
   var fenArr []string
   for pos, piece := range b.whites {
-    grid[pos.row][pos.col] = piece.ToString()
+    grid[7-pos.row][pos.col] = piece.ToString()
   }
   for pos, piece := range b.blacks {
-    grid[pos.row][pos.col] = piece.ToString()
+    grid[7-pos.row][pos.col] = piece.ToString()
   }
   for _, row := range grid {
     fenString := ""

@@ -13,7 +13,7 @@ func main() {
   b := GenerateBoard(fen)
   fmt.Println(b.GenerateFen())
   // fmt.Println(b.whites[ToPos("e4")])
-  // startServer()
+  startServer()
 
 
   t := time.Now()

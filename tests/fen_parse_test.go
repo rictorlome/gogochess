@@ -81,6 +81,10 @@ func TestPositions(t *testing.T) {
     if resMap[b.blackKing].ToString() != "k" {
       t.Error(fmt.Sprintf("Expected Black King on %s, got %s", resMap[b.blackKing].ToString(), b.blackKing.String()))
     }
+    // Test GenerateFen
+    if b.GenerateFen() != pair.FEN {
+      t.Error(fmt.Sprintf("Expected %s, got %s", pair.FEN, b.GenerateFen()))
+    }
   }
 }
 
