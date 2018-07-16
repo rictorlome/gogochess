@@ -137,6 +137,92 @@ func (b *Board) naiveMove(start Position, end Position, promotion string) {
     b.blacks[end] = piece
   }
 }
+// must be called before the actual move, in order to check if capture took place.
+func (b *Board) updateBoardState(start Position, end Position, promotion string) {
+  _, piece := b.findPiece(start)
+  // king position and castle
+  if piece.ToString() == "K" {
+    b.whiteKing = end
+    b.availableCastles["wk"], b.availableCastles["wq"] = false, false
+  }
+  if piece.ToString() == "k" {
+    b.blackKing = end
+    b.availableCastles["bk"], b.availableCastles["bq"] = false, false
+  }
+  // en passant square
+  if piece.ToString() == "P" && start.row == 1 && end.row == 3 {
+    b.enPassantSquare = Position{end.row-1,end.col}
+  } else if piece.ToString() == "p" && start.row == 6 && end.row == 4 {
+    b.enPassantSquare = Position{end.row-1,end.col}
+  } else {
+    b.enPassantSquare = Position{-1,-1}
+  }
+  // who to move
+  b.whiteToMove = !b.whiteToMove
+  // availabe castles
+  if piece.ToString() == "R" {
+    if start.col == 0 {
+      b.availableCastles["wq"] = false
+    }
+    if start.col == 7 {
+      b.availableCastles["wk"] = false
+    }
+  }
+  if piece.ToString() == "r" {
+    if start.col == 0 {
+      b.availableCastles["bq"] = false
+    }
+    if start.col == 7 {
+      b.availableCastles["bk"] = false
+    }
+  }
+  // half clock move (number of moves since last pawn advance or capture)
+  capture, _ := b.findPiece(end)
+  if piece.ToString() == "P" || piece.ToString() == "p" || capture {
+    b.halfMoveClock = 0
+  } else {
+    b.halfMoveClock += 1
+  }
+  // full move number (updated after whiteToMove is updated)
+  if b.whiteToMove {
+    b.fullMoveNumber += 1
+  }
+}
+// must be called before update board state, in order to access previous en passant square
+func (b *Board) cleanUpEnPassant(start Position, end Position) {
+  _, piece := b.findPiece(start)
+  if piece.ToString == "P" && end == b.enPassantSquare {
+    delete(b.blacks, b.enPassantSquare)
+  }
+  if piece.ToString == "p" && end == b.enPassantSquare {
+    delete(b.whites, b.enPassantSquare)
+  }
+}
+
+func (b *Board) cleanUpCastle(start Position, end Position) {
+  _, piece := b.findPiece(start)
+  if piece.ToString() == "K" {
+    //kingside
+    if end.col > start.col + 1 {
+      b.naiveMove(parseMove("h1f1"))
+    }
+    //queenside
+    if end.col < start.col - 1 {
+      b.naiveMove(parseMove("a1d1"))
+    }
+  }
+  if piece.ToString() == "k" {
+    //kingside
+    if end.col > start.col + 1 {
+      b.naiveMove(parseMove("h8f8"))
+    }
+    //queenside
+    if end.col < start.col - 1 {
+      b.naiveMove(parseMove("a8d8"))
+    }
+  }
+}
+
 
 func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) bool {
   _, piece := b.findPiece(start)
