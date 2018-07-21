@@ -2,8 +2,8 @@
 package main
 
 
-func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) []Position {
-  var res []Position
+func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) map[Position]bool {
+  res := make(map[Position]bool)
   OUTER:
   for _, moveDiff := range(moveDiffs) {
     for i := 1; i <= SIZE; i++ {
@@ -13,7 +13,7 @@ func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) []Position {
         continue OUTER
       }
       if newPos.isOnBoard() {
-        res = append(res, newPos)
+        res[newPos] = true
       }
       // Cannot slide beyond captured piece of opposite color
       if b.hasColoredPieceThere(!isWhite, newPos) {
@@ -39,7 +39,7 @@ func (b *Bishop) IsWhite() bool {
   return b.isWhite
 }
 
-func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) []Position {
+func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
   moveDiffs := [][]int{
       []int{1,1}, []int{-1,-1},
       []int{-1,1}, []int{1,-1},
@@ -47,7 +47,7 @@ func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) []Position {
   return slide(bish.isWhite, moveDiffs, pos, b)
 }
 
-func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   return bish.GetAttackingSquares(pos, b)
 }
 
@@ -66,7 +66,7 @@ func (r *Rook) IsWhite() bool {
   return r.isWhite
 }
 
-func (r *Rook) GetAttackingSquares(pos Position, b *Board) []Position {
+func (r *Rook) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
   moveDiffs := [][]int{
       []int{1,0}, []int{0,1},
       []int{-1,0}, []int{0,-1},
@@ -75,7 +75,7 @@ func (r *Rook) GetAttackingSquares(pos Position, b *Board) []Position {
 }
 
 
-func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   return r.GetAttackingSquares(pos, b)
 }
 
@@ -94,7 +94,7 @@ func (q *Queen) IsWhite() bool {
   return q.isWhite
 }
 
-func (q *Queen) GetAttackingSquares(pos Position, b *Board) []Position {
+func (q *Queen) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
   moveDiffs := [][]int{
       []int{1,0}, []int{0,1},
       []int{-1,0}, []int{0,-1},
@@ -104,6 +104,6 @@ func (q *Queen) GetAttackingSquares(pos Position, b *Board) []Position {
   return slide(q.isWhite, moveDiffs, pos, b)
 }
 
-func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   return q.GetAttackingSquares(pos, b)
 }

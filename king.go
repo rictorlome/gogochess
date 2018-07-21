@@ -15,15 +15,15 @@ func (k *King) ToString() string {
   return "k"
 }
 
-func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
-  var res []Position
+func (k *King) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
+  res := make(map[Position]bool)
   nums := []int{-1,0,1}
   for _, i := range(nums) {
     for _, j := range(nums) {
       if !(i == 0 && j == 0) {
         newPos := Position{pos.row+i,pos.col+j}
         if newPos.isOnBoard() && !b.hasColoredPieceThere(k.isWhite, newPos) {
-          res = append(res, newPos)
+          res[newPos] = true
         }
       }
     }
@@ -31,7 +31,7 @@ func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
   return res
 }
 //Board state already knows whether king and rook have moved.
-func (k *King) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (k *King) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   result := k.GetAttackingSquares(pos, b)
   kingside, queenside := "bk", "bq"
   row := 7
@@ -47,10 +47,10 @@ func (k *King) GetPseudoLegalMoves(pos Position, b *Board) []Position {
     Position{row,6}, Position{row,5},
   }
   if b.availableCastles[kingside] && b.areEmptySquares(interking) {
-    result = append(result, kingsquare)
+    result[kingsquare] = true
   }
   if b.availableCastles[queenside] && b.areEmptySquares(interqueen) {
-    result = append(result, queensquare)
+    result[queensquare] = true
   }
   return result
 }

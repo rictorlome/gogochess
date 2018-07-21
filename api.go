@@ -90,7 +90,7 @@ func GetPieceMoves(fen string, sq string) PieceMoves {
   _, piece := b.findPiece(pos)
   moves := piece.GetPseudoLegalMoves(pos, &b)
   var sqs []MoveStatus
-  for _, move := range(moves) {
+  for move, _ := range(moves) {
     sq := MoveStatus{move.String(), b.wouldCauseCheck(parseMove(sq+move.String()))}
     sqs = append(sqs, sq)
   }

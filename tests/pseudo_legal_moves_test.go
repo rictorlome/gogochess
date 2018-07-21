@@ -38,7 +38,7 @@ func TestPseudoLegalMoves(t *testing.T) {
     _, piece := b.findPiece(pos)
     moves := piece.GetPseudoLegalMoves(pos, &b)
     sqs := []string{}
-    for _, move := range(moves) {
+    for move, _ := range(moves) {
       sqs = append(sqs, move.String())
     }
     for _, sq := range(sqs) {

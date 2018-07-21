@@ -22,7 +22,7 @@ func main() {
   fmt.Println(ToPos("-"))
   fmt.Println("p" == "P")
   // fmt.Println(b.whites[ToPos("e4")])
-  // startServer()
+  startServer()
 
 
   t := time.Now()

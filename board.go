@@ -98,10 +98,8 @@ func (b *Board) inCheck(white bool) bool {
   attackingPieces := b.getColoredPieces(!white)
   for pos, piece := range(attackingPieces) {
     attackingSquares := piece.GetAttackingSquares(pos, b)
-    for _, sq := range(attackingSquares) {
-      if kingPos == sq {
-        return true
-      }
+    if attackingSquares[kingPos] {
+      return true
     }
   }
   return false
@@ -134,11 +132,9 @@ func (b *Board) areAttackedByColor(white bool, positions []Position) bool {
   pieces := b.getColoredPieces(white)
   for pos, piece := range(pieces) {
     attackingSquares := piece.GetAttackingSquares(pos, b)
-    for _, sq := range(attackingSquares) {
-      for _, position := range(positions) {
-        if position == sq {
-          return true
-        }
+    for _, position := range(positions) {
+      if attackingSquares[position] {
+        return true
       }
     }
   }

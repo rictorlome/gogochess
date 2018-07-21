@@ -19,8 +19,8 @@ func (p *Pawn) hasMoved(pos Position) bool {
   return (p.isWhite && pos.row != 1) || (!p.isWhite && pos.row != 6)
 }
 
-func (p *Pawn) GetAttackingSquares(pos Position, b *Board) []Position {
-  var res []Position
+func (p *Pawn) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
+  res := make(map[Position]bool)
   forwardDir := map[bool]int{
     true: 1,
     false: -1,
@@ -29,13 +29,13 @@ func (p *Pawn) GetAttackingSquares(pos Position, b *Board) []Position {
   //can capture opposite color (or empassant sq) if neighbors of above square
   for _, side := range(forwardSquare.getNeighbors()) {
     if side.isOnBoard() && (b.hasColoredPieceThere(!p.isWhite, side) || b.enPassantSquare == side) {
-      res = append(res, side)
+      res[side] = true
     }
   }
   return res
 }
 
-func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) []Position {
+func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   res := p.GetAttackingSquares(pos,b)
   forwardDir := map[bool]int{
     true: 1,
@@ -44,12 +44,12 @@ func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) []Position {
   //can advance one into empty square
   forwardSquare := Position{pos.row+forwardDir[p.isWhite], pos.col}
   if forwardSquare.isOnBoard() && forwardSquare.isEmpty(b) {
-    res = append(res, forwardSquare)
+    res[forwardSquare] = true
   }
   //if has not moved, can advance two through empty into empty
   twoUp := Position{forwardSquare.row+forwardDir[p.isWhite], forwardSquare.col}
   if !p.hasMoved(pos) && forwardSquare.isEmpty(b) && twoUp.isEmpty(b) {
-    res = append(res, twoUp)
+    res[twoUp] = true
   }
   return res
 }
