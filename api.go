@@ -4,19 +4,13 @@ import (
   "net/http"
   "fmt"
   "encoding/json"
-  "strconv"
+  // "strconv"
 
   "github.com/gorilla/handlers"
   "github.com/gorilla/mux"
 )
 
-var fens = []string{"rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "rnbqkbnr/ppp2ppp/3p4/3Qp3/4P3/1PN5/P1PP1PPP/R1B1KBNR w KQkq - 0 1",
-      "rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 1",
-      "rnb1kb1r/ppp1p1pp/3q1n2/3pPp2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 1",}
+var initialBoard string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 func startServer() {
   router := mux.NewRouter()
@@ -33,7 +27,7 @@ func startServer() {
 func TestEndpoint(w http.ResponseWriter, r *http.Request) {
   switch r.Method {
   case "GET":
-    json.NewEncoder(w).Encode(fens)
+    json.NewEncoder(w).Encode(initialBoard)
   case "POST":
     HandleTestPost(w, r)
   default:
@@ -46,15 +40,25 @@ func HandleTestPost(w http.ResponseWriter, r *http.Request) {
   switch r.Form["PostType"][0] {
   case "NextMoves":
     PostNextMoves(w,r)
+  case "MovePiece":
+    PostMovePiece(w,r)
   }
 }
 
 func PostNextMoves(w http.ResponseWriter, r *http.Request) {
+  //params are fen, square, PostType
   r.ParseForm()
-  id, _ := strconv.Atoi(r.Form["id"][0])
-  requestedFen := fens[id]
-  NextMoves := GetPieceMoves(requestedFen, r.Form["square"][0])
+  NextMoves := GetPieceMoves(r.Form["fen"][0], r.Form["square"][0])
   json.NewEncoder(w).Encode(NextMoves)
+}
+
+func PostMovePiece(w http.ResponseWriter, r *http.Request) {
+  //params are fen, uci, PostType
+  r.ParseForm()
+  b := GenerateBoard(r.Form["fen"][0])
+  b.moveUCI(r.Form["uci"][0])
+  ResultFen := b.GenerateFen()
+  json.NewEncoder(w).Encode(ResultFen)
 }
 
 type MoveStatus struct {

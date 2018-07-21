@@ -12,6 +12,9 @@
   </body>
 
   <script>
+    const idxToBoard = {};
+    const idxToFen = {};
+
     function getFromUrl(url, callback){
       $.ajax({
         url: `http://localhost:8080/${url}`,
@@ -66,39 +69,48 @@
     }
 
     function printAllBoards(response) {
-      response.forEach( (fenString, idx) => {
-        createBoardFromFen(fenString, idx);
-      })
+      switch (typeof response) {
+        case "string":
+          createBoardFromFen(response, 0)
+          idxToFen[0] = response;
+          break;
+        case "object":
+          response.forEach( (fenString, idx) => {
+            idxToFen[idx] = fenString;
+            createBoardFromFen(fenString, idx);
+          })
+          break;
+        default:
+          console.log(response);
+      }
     }
-    var onDragStart = function(source, piece, position, orientation) {
-      console.log("Drag started:");
-      console.log("Source: " + source);
-      console.log("Piece: " + piece);
-      console.log("Position: " + ChessBoard.objToFen(position));
-      console.log("Orientation: " + orientation);
-    };
     function createBoardFromFen(fen, idx) {
       var cfg = {
         draggable: true,
         position: fen,
         onDragStart: (source, piece, position, orientation) => {
-          onDragStart(source, piece, position, orientation)
-          postToUrl('tests', {id: idx, square: source, PostType: "NextMoves"}, (r) => {
+          postToUrl('tests', {fen:idxToFen[idx], square: source, PostType: "NextMoves"}, (r) => {
             removeHighlighting(idx)
             highlightNextMoves(idx, r.Square, r.Moves)
           })
         },
-        sparePieces: true
+        onDrop: (source, target, piece, newPos, oldPos, orientation) => {
+          postToUrl('tests', {fen: idxToFen[idx], PostType: "MovePiece", uci: source.concat(target)}, (fen) => {
+            removeHighlighting(idx)
+            idxToFen[idx] = fen
+            idxToBoard[idx].position(fen)
+          })
+        }
       };
       const bdiv = document.createElement("div");
       bdiv.setAttribute("id", `board-${idx}`);
-      bdiv.setAttribute("style", "width: 200px");
+      bdiv.setAttribute("style", "width: 400px");
       $("#board-list").append(bdiv)
-      ChessBoard(document.getElementById(`board-${idx}`), cfg);
+      idxToBoard[idx] = ChessBoard(document.getElementById(`board-${idx}`), cfg);
       return `board-${idx}`;
     }
     // getFromUrl('GetFens', printAllBoards)
-    getFromUrl('GetMoves', printAllNextMoves)
-    // getFromUrl('tests', printAllBoards)
+    // getFromUrl('GetMoves', printAllNextMoves)
+    getFromUrl('tests', printAllBoards)
   </script>
 </html>
