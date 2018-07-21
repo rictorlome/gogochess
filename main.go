@@ -12,12 +12,15 @@ func main() {
   start := time.Now()
   b := GenerateBoard(fen)
   b.naiveMove(parseMove("e7e5"))
-  for pos, piece := range(b.whites) {
-    if piece.ToString() == "K" {
-      fmt.Println(pos.col)
-    }
-  }
-  fmt.Println(b.GenerateFen())
+  // for pos, piece := range(b.whites) {
+  //   if piece.ToString() == "K" {
+  //     fmt.Println(pos.col)
+  //   }
+  // }
+  // fmt.Println(b.GenerateFen())
+  fmt.Println(Position{-1,-1}.String())
+  fmt.Println(ToPos("-"))
+  fmt.Println("p" == "P")
   // fmt.Println(b.whites[ToPos("e4")])
   // startServer()
 

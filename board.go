@@ -120,6 +120,31 @@ func (b *Board) findPiece(p Position) (bool, Piece) {
   return false, nil
 }
 
+func (b *Board) areEmptySquares(positions []Position) bool {
+  for _, pos := range(positions) {
+    there, _ := b.findPiece(pos)
+    if there {
+      return false
+    }
+  }
+  return true
+}
+
+func (b *Board) areAttackedByColor(white bool, positions []Position) bool {
+  pieces := b.getColoredPieces(white)
+  for pos, piece := range(pieces) {
+    attackingSquares := piece.GetAttackingSquares(pos, b)
+    for _, sq := range(attackingSquares) {
+      for _, position := range(positions) {
+        if position == sq {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
+
 // Accepts UCI move format.
 func parseMove(s string) (start Position, end Position, promotion string) {
   start = ToPos(s[0:2])
@@ -160,7 +185,7 @@ func (b *Board) updateBoardState(start Position, end Position) {
     b.blackKing = end
     b.availableCastles["bk"], b.availableCastles["bq"] = false, false
   }
-  // en passant square (per lichess this only updates when opposite color has attacking pawn posted correctly)
+  // en passant square
   if piece.ToString() == "P" && start.row == 1 && end.row == 3 {
     b.enPassantSquare = Position{end.row-1,end.col}
   } else if piece.ToString() == "p" && start.row == 6 && end.row == 4 {
@@ -252,8 +277,11 @@ func (b *Board) cleanUpPromotion(start Position, promotion string) {
   }
 }
 
-func (b *Board) move(s string) {
-  start, end, promotion := parseMove(s)
+func (b *Board) moveUCI(s string) {
+  b.move(parseMove(s))
+}
+
+func (b *Board) move(start Position, end Position, promotion string) {
   b.cleanUpEnPassant(start, end)
   b.cleanUpCastle(start, end)
   b.updateBoardState(start, end)
@@ -261,14 +289,15 @@ func (b *Board) move(s string) {
   b.naiveMove(start, end, promotion)
 }
 
-
+//NOTE: are promotion, castle and en passant edge cases relevant here? Seems like no.
 func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) bool {
   _, piece := b.findPiece(start)
-  occupied, target := b.findPiece(end)
+  capture, target := b.findPiece(end)
   b.naiveMove(start,end,promotion)
   check := b.inCheck(piece.IsWhite())
   b.naiveMove(end,start,promotion)
-  if occupied {
+  // replace the piece, if there was a capture
+  if capture {
     pieces := b.getColoredPieces(!piece.IsWhite())
     pieces[end] = target
   }

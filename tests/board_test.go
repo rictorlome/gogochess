@@ -210,7 +210,7 @@ func TestMove(t *testing.T) {
 
   b := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
   for _, test := range(tests) {
-    b.move(test.uci)
+    b.moveUCI(test.uci)
     generatedFen := b.GenerateFen()
     if generatedFen != test.fen {
       t.Error(fmt.Sprintf("Expected fen %v after move %v, got %v", test.fen, test.uci, generatedFen))

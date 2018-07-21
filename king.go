@@ -30,20 +30,27 @@ func (k *King) GetAttackingSquares(pos Position, b *Board) []Position {
   }
   return res
 }
-//Temporary...
+//Board state already knows whether king and rook have moved.
 func (k *King) GetPseudoLegalMoves(pos Position, b *Board) []Position {
-  minusCastles := k.GetAttackingSquares(pos, b)
-  // kingside, queenside := "bk", "bq"
-  // queensquare, kingsquare := Position{7,0}, Position{7,7}
-  // if k.isWhite {
-  //   kingside, queenside = "wk", "wq"
-  //   queensquare, kingsquare = Position{0,0}, Position{0,7}
-  // }
-  //condition for castle is:
-  //king has not moved
-  //rook has not moved
-  //intermediate squares are empty
-  //king not in check, king not passing through check
-
-  return minusCastles
+  result := k.GetAttackingSquares(pos, b)
+  kingside, queenside := "bk", "bq"
+  row := 7
+  if k.isWhite {
+    kingside, queenside = "wk", "wq"
+    row = 0
+  }
+  queensquare, kingsquare := Position{row,2}, Position{row,6}
+  interqueen := []Position{
+    Position{row,1}, Position{row,2}, Position{row,3},
+  }
+  interking := []Position{
+    Position{row,6}, Position{row,5},
+  }
+  if b.availableCastles[kingside] && b.areEmptySquares(interking) {
+    result = append(result, kingsquare)
+  }
+  if b.availableCastles[queenside] && b.areEmptySquares(interqueen) {
+    result = append(result, queensquare)
+  }
+  return result
 }
