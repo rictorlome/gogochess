@@ -99,6 +99,7 @@ func (b *Board) GenerateCastleString() string {
   if b.availableCastles["wq"] { castleString += "Q"}
   if b.availableCastles["bk"] { castleString += "k"}
   if b.availableCastles["bq"] { castleString += "q"}
+  if castleString == "" {castleString += "-"}
   return castleString
 }
 

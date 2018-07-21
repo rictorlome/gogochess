@@ -25,6 +25,9 @@ type Position struct {
 }
 
 func ToPos(s string) Position {
+  if s == "-" {
+    return Position{-1,-1}
+  }
   cols := "abcdefgh"
   r := int(s[1] - '0') - 1
   return Position{r, strings.Index(cols,s[0:1])}
@@ -116,6 +119,7 @@ func (b *Board) findPiece(p Position) (bool, Piece) {
   }
   return false, nil
 }
+
 // Accepts UCI move format.
 func parseMove(s string) (start Position, end Position, promotion string) {
   start = ToPos(s[0:2])
@@ -129,16 +133,23 @@ func parseMove(s string) (start Position, end Position, promotion string) {
 
 func (b *Board) naiveMove(start Position, end Position, promotion string) {
   _, piece := b.findPiece(start)
+  capture, _ := b.findPiece(end)
   if piece.IsWhite() {
     delete(b.whites, start)
     b.whites[end] = piece
+    if capture {
+      delete(b.blacks, end)
+    }
   } else {
     delete(b.blacks, start)
     b.blacks[end] = piece
+    if capture {
+      delete(b.whites, end)
+    }
   }
 }
 // must be called before the actual move, in order to check if capture took place.
-func (b *Board) updateBoardState(start Position, end Position, promotion string) {
+func (b *Board) updateBoardState(start Position, end Position) {
   _, piece := b.findPiece(start)
   // king position and castle
   if piece.ToString() == "K" {
@@ -149,11 +160,11 @@ func (b *Board) updateBoardState(start Position, end Position, promotion string)
     b.blackKing = end
     b.availableCastles["bk"], b.availableCastles["bq"] = false, false
   }
-  // en passant square
+  // en passant square (per lichess this only updates when opposite color has attacking pawn posted correctly)
   if piece.ToString() == "P" && start.row == 1 && end.row == 3 {
     b.enPassantSquare = Position{end.row-1,end.col}
   } else if piece.ToString() == "p" && start.row == 6 && end.row == 4 {
-    b.enPassantSquare = Position{end.row-1,end.col}
+    b.enPassantSquare = Position{end.row+1,end.col}
   } else {
     b.enPassantSquare = Position{-1,-1}
   }
@@ -190,17 +201,23 @@ func (b *Board) updateBoardState(start Position, end Position, promotion string)
 }
 // must be called before update board state, in order to access previous en passant square
 func (b *Board) cleanUpEnPassant(start Position, end Position) {
-  _, piece := b.findPiece(start)
-  if piece.ToString == "P" && end == b.enPassantSquare {
-    delete(b.blacks, b.enPassantSquare)
+  there, piece := b.findPiece(start)
+  if !there {
+    return
   }
-  if piece.ToString == "p" && end == b.enPassantSquare {
-    delete(b.whites, b.enPassantSquare)
+  if piece.ToString() == "P" && end == b.enPassantSquare {
+    delete(b.blacks, Position{start.row,end.col})
+  }
+  if piece.ToString() == "p" && end == b.enPassantSquare {
+    delete(b.whites, Position{start.row,end.col})
   }
 }
 
 func (b *Board) cleanUpCastle(start Position, end Position) {
-  _, piece := b.findPiece(start)
+  there, piece := b.findPiece(start)
+  if !there {
+    return
+  }
   if piece.ToString() == "K" {
     //kingside
     if end.col > start.col + 1 {
@@ -221,6 +238,27 @@ func (b *Board) cleanUpCastle(start Position, end Position) {
       b.naiveMove(parseMove("a8d8"))
     }
   }
+}
+
+func (b *Board) cleanUpPromotion(start Position, promotion string) {
+  if promotion == "" {
+    return
+  }
+  _, piece := b.findPiece(start)
+  if piece.IsWhite() {
+    b.whites[start] = ToPiece(strings.ToUpper(promotion))
+  } else {
+    b.blacks[start] = ToPiece(strings.ToLower(promotion))
+  }
+}
+
+func (b *Board) move(s string) {
+  start, end, promotion := parseMove(s)
+  b.cleanUpEnPassant(start, end)
+  b.cleanUpCastle(start, end)
+  b.updateBoardState(start, end)
+  b.cleanUpPromotion(start, promotion)
+  b.naiveMove(start, end, promotion)
 }
 
 
