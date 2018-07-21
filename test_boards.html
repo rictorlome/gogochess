@@ -9,6 +9,23 @@
   </head>
   <body>
     <div id="board-list"></div>
+    <form>
+    <fieldset>
+        <legend>Select Which Moves You Want To Test</legend>
+        <div>
+            <input type="radio" id="GetAttackingSquares" name="moves" checked />
+            <label for="GetAttackingSquares">GetAttackingSquares</label>
+        </div>
+        <div>
+            <input type="radio" id="GetPseudoLegalMoves" name="moves" />
+            <label for="GetPseudoLegalMoves">GetPseudoLegalMoves</label>
+        </div>
+        <div>
+            <input type="radio" id="GetLegalMoves" disabled />
+            <label for="GetLegalMoves">GetLegalMoves</label>
+        </div>
+    </fieldset>
+  </form>
   </body>
 
   <script>
@@ -45,6 +62,7 @@
     function removeHighlighting(id) {
       $(`#board-${id} .square-55d63`).removeClass(`highlight-yellow`)
       $(`#board-${id} .square-55d63`).removeClass(`highlight-blue`)
+      $(`#board-${id} .square-55d63`).removeClass(`highlight-red`)
     }
     function highlightNextMoves(id, square, nextMoves) {
       highlightColor(id, square, 'blue')
@@ -89,7 +107,8 @@
         draggable: true,
         position: fen,
         onDragStart: (source, piece, position, orientation) => {
-          postToUrl('tests', {fen:idxToFen[idx], square: source, PostType: "NextMoves"}, (r) => {
+          const methodToTest = $("input[name='moves']:checked")[0].id
+          postToUrl('tests', {fen:idxToFen[idx], square: source, methodToTest: methodToTest, PostType: "NextMoves"}, (r) => {
             removeHighlighting(idx)
             highlightNextMoves(idx, r.Square, r.Moves)
           })
