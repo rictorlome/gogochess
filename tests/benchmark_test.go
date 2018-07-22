@@ -57,3 +57,12 @@ func BenchmarkNaiveMove(b *testing.B) {
     }
   }
 }
+
+var result map[Position]bool
+
+func BenchmarkGetAllLegalMoves(b *testing.B) {
+  board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  for i := 0; i < b.N; i++ {
+     board.GetAllLegalMoves(i % 2 == 0)
+  }
+}
