@@ -10,5 +10,5 @@ type Piece interface {
   // - this is the same as attacking squares for all pieces except pawn and king
   GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool
   //LegalMoves takes check into account
-  // GetLegalMoves(pos Position, b *Board) []Position
+  GetLegalMoves(pos Position, b *Board) map[Position]bool
 }

@@ -25,7 +25,7 @@ func (n *Knight) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
   }
   for _, diff := range(moveDiffs) {
     newPos := Position{pos.row+diff[0],pos.col+diff[1]}
-    if newPos.isOnBoard() && !b.hasColoredPieceThere(n.isWhite, newPos) {
+    if newPos.isOnBoard() {
       res[newPos] = true
     }
   }
@@ -33,5 +33,21 @@ func (n *Knight) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 }
 
 func (n *Knight) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-  return n.GetAttackingSquares(pos, b)
+  result := n.GetAttackingSquares(pos, b)
+  for move := range(result) {
+    if b.hasColoredPieceThere(n.isWhite, move) {
+      delete(result, move)
+    }
+  }
+  return result
+}
+
+func (n *Knight) GetLegalMoves(pos Position, b *Board) map[Position]bool {
+  result := n.GetPseudoLegalMoves(pos, b)
+  for move := range(result) {
+    if b.wouldCauseCheck(pos, move, "") {
+      delete(result, move)
+    }
+  }
+  return result
 }

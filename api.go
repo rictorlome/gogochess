@@ -75,16 +75,21 @@ func GetPieceMoves(fen string, sq string, methodToTest string) PieceMoves {
   b := GenerateBoard(fen)
   pos := ToPos(sq)
   _, piece := b.findPiece(pos)
-  var moves map[Position]bool
+  moves := make(map[Position]bool)
   switch methodToTest {
   case "GetAttackingSquares":
     moves = piece.GetAttackingSquares(pos, &b)
   case "GetPseudoLegalMoves":
     moves = piece.GetPseudoLegalMoves(pos, &b)
+  case "GetLegalMoves":
+    moves = piece.GetLegalMoves(pos, &b)
+  case "GetAllLegalMoves":
+    moves = b.GetAllLegalMoves(piece.IsWhite())
   }
   var sqs []MoveStatus
   for move, _ := range(moves) {
     sq := MoveStatus{move.String(), b.wouldCauseCheck(parseMove(sq+move.String()))}
+    // sq := MoveStatus{move.String(), false}
     sqs = append(sqs, sq)
   }
   return PieceMoves {

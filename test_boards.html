@@ -21,8 +21,12 @@
             <label for="GetPseudoLegalMoves">GetPseudoLegalMoves</label>
         </div>
         <div>
-            <input type="radio" id="GetLegalMoves" disabled />
+            <input type="radio" id="GetLegalMoves" name="moves" />
             <label for="GetLegalMoves">GetLegalMoves</label>
+        </div>
+        <div>
+            <input type="radio" id="GetAllLegalMoves" name="moves" />
+            <label for="GetAllLegalMoves">GetAllLegalMoves</label>
         </div>
     </fieldset>
   </form>
@@ -31,6 +35,14 @@
   <script>
     const idxToBoard = {};
     const idxToFen = {};
+
+    function whiteToMove(idx) {
+      return idxToFen[idx].split(' ')[1] === "w"
+    }
+
+    function piecesTurn(idx, piece) {
+      return ((piece[0] === "w") === whiteToMove(idx))
+    }
 
     function getFromUrl(url, callback){
       $.ajax({
@@ -114,6 +126,10 @@
           })
         },
         onDrop: (source, target, piece, newPos, oldPos, orientation) => {
+          if (source === target) return;
+          if (!piecesTurn(idx, piece)) {
+            return 'snapback'
+          }
           postToUrl('tests', {fen: idxToFen[idx], PostType: "MovePiece", uci: source.concat(target)}, (fen) => {
             removeHighlighting(idx)
             idxToFen[idx] = fen

@@ -8,15 +8,11 @@ func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) map[Position
   for _, moveDiff := range(moveDiffs) {
     for i := 1; i <= SIZE; i++ {
       newPos := Position{pos.row + moveDiff[0] * i, pos.col + moveDiff[1] * i}
-      // Cannot capture own piece
-      if b.hasColoredPieceThere(isWhite, newPos) {
-        continue OUTER
-      }
       if newPos.isOnBoard() {
         res[newPos] = true
       }
-      // Cannot slide beyond captured piece of opposite color
-      if b.hasColoredPieceThere(!isWhite, newPos) {
+      there, _ := b.findPiece(newPos)
+      if there {
         continue OUTER
       }
     }
@@ -48,7 +44,23 @@ func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) map[Position]boo
 }
 
 func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-  return bish.GetAttackingSquares(pos, b)
+  result := bish.GetAttackingSquares(pos, b)
+  for move := range(result) {
+    if b.hasColoredPieceThere(bish.isWhite, move) {
+      delete(result, move)
+    }
+  }
+  return result
+}
+
+func (bish *Bishop) GetLegalMoves(pos Position, b *Board) map[Position]bool {
+  result := bish.GetPseudoLegalMoves(pos, b)
+  for move := range(result) {
+    if b.wouldCauseCheck(pos, move, "") {
+      delete(result, move)
+    }
+  }
+  return result
 }
 
 type Rook struct {
@@ -76,7 +88,23 @@ func (r *Rook) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 
 
 func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-  return r.GetAttackingSquares(pos, b)
+  result := r.GetAttackingSquares(pos, b)
+  for move := range(result) {
+    if b.hasColoredPieceThere(r.isWhite, move) {
+      delete(result, move)
+    }
+  }
+  return result
+}
+
+func (r *Rook) GetLegalMoves(pos Position, b *Board) map[Position]bool {
+  result := r.GetPseudoLegalMoves(pos, b)
+  for move := range(result) {
+    if b.wouldCauseCheck(pos, move, "") {
+      delete(result, move)
+    }
+  }
+  return result
 }
 
 type Queen struct {
@@ -105,5 +133,21 @@ func (q *Queen) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 }
 
 func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-  return q.GetAttackingSquares(pos, b)
+  result := q.GetAttackingSquares(pos, b)
+  for move := range(result) {
+    if b.hasColoredPieceThere(q.isWhite, move) {
+      delete(result, move)
+    }
+  }
+  return result
+}
+
+func (q *Queen) GetLegalMoves(pos Position, b *Board) map[Position]bool {
+  result := q.GetPseudoLegalMoves(pos, b)
+  for move := range(result) {
+    if b.wouldCauseCheck(pos, move, "") {
+      delete(result, move)
+    }
+  }
+  return result
 }

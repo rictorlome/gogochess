@@ -93,19 +93,6 @@ func ToPiece(s string) Piece {
   return symbolToPiece[s]
 }
 
-func (b *Board) inCheck(white bool) bool {
-  kingPos := b.getColoredKing(white)
-  attackingPieces := b.getColoredPieces(!white)
-  for pos, piece := range(attackingPieces) {
-    attackingSquares := piece.GetAttackingSquares(pos, b)
-    if attackingSquares[kingPos] {
-      return true
-    }
-  }
-  return false
-}
-
-
 func (b *Board) findPiece(p Position) (bool, Piece) {
   piece := b.whites[p]
   if piece != nil {
@@ -285,17 +272,53 @@ func (b *Board) move(start Position, end Position, promotion string) {
   b.naiveMove(start, end, promotion)
 }
 
+func (b *Board) inCheck(white bool) bool {
+  kingPos := b.getColoredKing(white)
+  attackingPieces := b.getColoredPieces(!white)
+  for pos, piece := range(attackingPieces) {
+    attackingSquares := piece.GetAttackingSquares(pos, b)
+    if attackingSquares[kingPos] {
+      return true
+    }
+  }
+  return false
+}
+
 //NOTE: are promotion, castle and en passant edge cases relevant here? Seems like no.
 func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) bool {
   _, piece := b.findPiece(start)
   capture, target := b.findPiece(end)
   b.naiveMove(start,end,promotion)
+  if piece.ToString() == "K" {
+    b.whiteKing = end
+  }
+  if piece.ToString() == "k" {
+    b.blackKing = end
+  }
   check := b.inCheck(piece.IsWhite())
   b.naiveMove(end,start,promotion)
+  if piece.ToString() == "K" {
+    b.whiteKing = start
+  }
+  if piece.ToString() == "k" {
+    b.blackKing = start
+  }
   // replace the piece, if there was a capture
   if capture {
     pieces := b.getColoredPieces(!piece.IsWhite())
     pieces[end] = target
   }
   return check
+}
+
+func (b *Board) GetAllLegalMoves(white bool) map[Position]bool {
+  moves := make(map[Position]bool)
+  pieces := b.getColoredPieces(white)
+  for onePos, onePiece := range(pieces) {
+    onePieceMoves := onePiece.GetLegalMoves(onePos, b)
+    for m := range(onePieceMoves) {
+      moves[m] = true
+    }
+  }
+  return moves
 }

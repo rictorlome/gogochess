@@ -28,7 +28,7 @@ func (p *Pawn) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
   forwardSquare := Position{pos.row+forwardDir[p.isWhite], pos.col}
   //can capture opposite color (or empassant sq) if neighbors of above square
   for _, side := range(forwardSquare.getNeighbors()) {
-    if side.isOnBoard() && (b.hasColoredPieceThere(!p.isWhite, side) || b.enPassantSquare == side) {
+    if side.isOnBoard() {
       res[side] = true
     }
   }
@@ -37,6 +37,11 @@ func (p *Pawn) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 
 func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
   res := p.GetAttackingSquares(pos,b)
+  for move := range(res) {
+    if !b.hasColoredPieceThere(!p.isWhite, move) && b.enPassantSquare != move {
+      delete(res, move)
+    }
+  }
   forwardDir := map[bool]int{
     true: 1,
     false: -1,
@@ -52,4 +57,14 @@ func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
     res[twoUp] = true
   }
   return res
+}
+
+func (p *Pawn) GetLegalMoves(pos Position, b *Board) map[Position]bool {
+  result := p.GetPseudoLegalMoves(pos, b)
+  for move := range(result) {
+    if b.wouldCauseCheck(pos, move, "") {
+      delete(result, move)
+    }
+  }
+  return result
 }
