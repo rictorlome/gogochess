@@ -35,10 +35,26 @@ func BenchmarkHasColoredPieceThere(b *testing.B) {
     board.hasColoredPieceThere(i % 2 == 0, pos)
   }
 }
+func BenchmarkToPos(b *testing.B) {
+  poses := []string{"a1","h8","-", "h7", "a8", "e4", "d4", "c2", "f8", "g3", "g1"}
+  for i := 0; i < b.N; i++ {
+    ToPos(poses[i % len(poses)])
+  }
+}
 func BenchmarkToPiece(b *testing.B) {
   pieces := []string{"p","r","k","b","q","k","P","R","K","B","Q","K"}
   for i := 0; i < b.N; i++ {
     ToPiece(pieces[i % len(pieces)])
+  }
+}
+func BenchmarkFindPiece(b *testing.B) {
+  board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  poses := []Position{
+     ToPos("a1"), ToPos("h8"), ToPos("-"), ToPos("h7"), ToPos("a8"),
+     ToPos("e4"), ToPos("d4"), ToPos("c2"), ToPos("f8"), ToPos("g3"), ToPos("g1"),
+   }
+  for i := 0; i < b.N; i++ {
+    board.findPiece(poses[i % len(poses)])
   }
 }
 func BenchmarkParseMove(b *testing.B) {
