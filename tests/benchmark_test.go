@@ -74,10 +74,107 @@ func BenchmarkNaiveMove(b *testing.B) {
   }
 }
 
+func BenchmarkGetAttackingSquaresInitial(b *testing.B) {
+  board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetAttackingSquares(pos, &board)
+  }
+}
+func BenchmarkGetAttackingSquaresMiddle(b *testing.B) {
+  board := GenerateBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetAttackingSquares(pos, &board)
+  }
+}
+func BenchmarkGetPseudoLegalMovesInitial(b *testing.B) {
+  board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetPseudoLegalMoves(pos, &board)
+  }
+}
+func BenchmarkGetPseudoLegalMovesMiddle(b *testing.B) {
+  board := GenerateBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetPseudoLegalMoves(pos, &board)
+  }
+}
+func BenchmarkGetLegalMovesInitial(b *testing.B) {
+  board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetLegalMoves(pos, &board)
+  }
+}
+func BenchmarkGetLegalMovesMiddle(b *testing.B) {
+  board := GenerateBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+  var poses []Position
+  for pos,_ := range(board.whites) {
+    poses = append(poses,pos)
+  }
+  for pos,_ := range(board.blacks) {
+    poses = append(poses,pos)
+  }
+  for i := 0; i < b.N; i++ {
+    pos := poses[i % len(poses)]
+    _, piece := board.findPiece(pos)
+    piece.GetLegalMoves(pos, &board)
+  }
+}
+
 var result map[Position]bool
 
-func BenchmarkGetAllLegalMoves(b *testing.B) {
+func BenchmarkGetAllLegalMovesInitial(b *testing.B) {
   board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  for i := 0; i < b.N; i++ {
+     board.GetAllLegalMoves(i % 2 == 0)
+  }
+}
+func BenchmarkGetAllLegalMovesMiddle(b *testing.B) {
+  board := GenerateBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
   for i := 0; i < b.N; i++ {
      board.GetAllLegalMoves(i % 2 == 0)
   }
