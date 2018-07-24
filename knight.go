@@ -15,6 +15,11 @@ func (n *Knight) IsWhite() bool {
 	return n.isWhite
 }
 
+func (n *Knight) CanPossiblyAttack(pos Position, target Position) bool {
+	rowDiff, colDiff := target.row-pos.row, target.col-pos.col
+	return -2 <= rowDiff && rowDiff <= 2 && -2 <= colDiff && colDiff <= 2
+}
+
 func (n *Knight) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 	res := make(map[Position]bool)
 	moveDiffs := [][]int{

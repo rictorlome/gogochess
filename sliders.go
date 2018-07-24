@@ -34,6 +34,11 @@ func (b *Bishop) IsWhite() bool {
 	return b.isWhite
 }
 
+func (bish *Bishop) CanPossiblyAttack(pos Position, target Position) bool {
+	return pos.row+pos.col == target.row+target.col || pos.row-pos.col == target.row-target.col
+
+}
+
 func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 	moveDiffs := [][]int{
 		[]int{1, 1}, []int{-1, -1},
@@ -77,6 +82,10 @@ func (r *Rook) IsWhite() bool {
 	return r.isWhite
 }
 
+func (r *Rook) CanPossiblyAttack(pos Position, target Position) bool {
+	return pos.row == target.row || pos.col == target.col
+}
+
 func (r *Rook) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 	moveDiffs := [][]int{
 		[]int{1, 0}, []int{0, 1},
@@ -118,6 +127,11 @@ func (q *Queen) ToString() string {
 
 func (q *Queen) IsWhite() bool {
 	return q.isWhite
+}
+
+func (q *Queen) CanPossiblyAttack(pos Position, target Position) bool {
+	onDiag := (pos.row+pos.col == target.row+target.col || pos.row-pos.col == target.row-target.col)
+	return pos.row == target.row || pos.col == target.col || onDiag
 }
 
 func (q *Queen) GetAttackingSquares(pos Position, b *Board) map[Position]bool {

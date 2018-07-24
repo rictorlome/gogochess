@@ -22,6 +22,11 @@ func (k *King) HomeRow() int {
 	return 7
 }
 
+func (k *King) CanPossiblyAttack(pos Position, target Position) bool {
+	rowDiff, colDiff := target.row-pos.row, target.col-pos.col
+	return -1 <= rowDiff && rowDiff <= 1 && -1 <= colDiff && colDiff <= 1
+}
+
 func (k *King) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 	res := make(map[Position]bool)
 	nums := []int{-1, 0, 1}
