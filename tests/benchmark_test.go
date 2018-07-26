@@ -47,6 +47,21 @@ func BenchmarkToPiece(b *testing.B) {
     ToPiece(pieces[i % len(pieces)])
   }
 }
+func BenchmarkToStringPos(b *testing.B) {
+  poses := []Position{
+    Position{1,1}, Position{2,2}, Position{3,3}, Position{7,7},
+    Position{-1,-1}, Position{6,0}, Position{4,6}, Position{2,7},
+  }
+  for i := 0; i < b.N; i++ {
+    poses[i % len(poses)].String()
+  }
+}
+func BenchmarkToStringPiece(b *testing.B) {
+  pieces := []Piece{ToPiece("p"),ToPiece("r"),ToPiece("k"),ToPiece("b"),ToPiece("q"),ToPiece("k"),ToPiece("P"),ToPiece("R"),ToPiece("K"),ToPiece("B"),ToPiece("Q"),ToPiece("K")}
+  for i := 0; i < b.N; i++ {
+    pieces[i % len(pieces)].ToString()
+  }
+}
 func BenchmarkFindPiece(b *testing.B) {
   board := GenerateBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
   poses := []Position{

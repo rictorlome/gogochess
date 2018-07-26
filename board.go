@@ -59,14 +59,11 @@ func (p Position) getNeighbors() []Position {
 }
 
 type Board struct {
-	whites, blacks   map[Position]Piece
-	whiteKing        Position
-	blackKing        Position
-	whiteToMove      bool
-	availableCastles map[string]bool
-	enPassantSquare  Position
-	halfMoveClock    int
-	fullMoveNumber   int
+	whites, blacks                        map[Position]Piece
+	whiteKing, blackKing, enPassantSquare Position
+	whiteToMove                           bool
+	availableCastles                      map[string]bool
+	halfMoveClock, fullMoveNumber         int
 }
 
 func (b *Board) getColoredPieces(white bool) map[Position]Piece {
@@ -299,6 +296,19 @@ func (b *Board) inCheck(white bool) bool {
 		}
 	}
 	return false
+}
+
+func (b *Board) inCheckmate(white bool) bool {
+	if !b.inCheck(white) {
+		return false
+	}
+	pieces := b.getColoredPieces(white)
+	for pos, piece := range pieces {
+		if len(piece.GetLegalMoves(pos, b)) > 0 {
+			return false
+		}
+	}
+	return true
 }
 
 //NOTE: are promotion, castle and en passant edge cases relevant here? Seems like no.

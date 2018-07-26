@@ -218,6 +218,40 @@ func TestMove(t *testing.T) {
   }
 }
 
+// this test includes CHECK and GetLegalMoves
+type checkMateTest struct {
+  fen string
+  whiteInCheckmate, blackInCheckmate bool
+}
+
+func TestCheckmate(t *testing.T) {
+  tests := []checkMateTest {
+    checkMateTest{"r1b1k2r/ppp2ppp/8/4p3/2P5/3nnP2/PP1NN1PP/2R1K2R w kq - 0 15", true, false},
+    checkMateTest{"2q3k1/p1K2p1p/4qP1P/3p2P1/8/8/8/8 w - - 3 47", true, false},
+    checkMateTest{"2r1kb1R/1q1nQp2/p5p1/4p1B1/1p2P1P1/2N2P2/PPP5/2K5 b - - 1 23", false, true},
+    checkMateTest{"8/pp4pp/2p5/6Qk/1PP4P/P4pP1/5P1K/8 b - - 2 39", false, true},
+    checkMateTest{"8/6pk/3p3p/4p3/4Pn1P/8/6q1/7K w - - 0 55", true, false},
+    checkMateTest{"4R1k1/8/r4BK1/8/5P1p/6P1/7P/8 b - - 1 49", false, true},
+    checkMateTest{"8/8/7p/pp5P/3k4/Pb2p3/q7/K7 w - - 8 54", true, false},
+    checkMateTest{"1r2qNrk/2R3pQ/p6p/8/8/P6P/1P3PPK/8 b - - 8 36", false, true},
+    checkMateTest{"4r1k1/2p2p2/1rpb2pp/3p4/1P1Pp3/N1P5/P2N1P1q/R2Q1RK1 w - - 2 25", true, false},
+  }
+  for i, test := range tests {
+    b := GenerateBoard(test.fen)
+    //sanity check
+    if test.whiteInCheckmate && test.blackInCheckmate {
+      t.Error("Impossible test, both colors in checkmate")
+    }
+    if b.inCheckmate(true) != test.whiteInCheckmate {
+      t.Error(fmt.Sprintf("Test %v: Expected white-in-checkmate=%v in position %v, got otherwise.", i, test.whiteInCheckmate, test.fen))
+    }
+    if b.inCheckmate(false) != test.blackInCheckmate {
+      t.Error(fmt.Sprintf("Test %v: Expected black-in-checkmate=%v in checkmate in position %v, got otherwise.", i, test.blackInCheckmate, test.fen))
+    }
+  }
+}
+
+
 type perft struct {
   depth, nodes, captures, enpassants, castles, promotions, checks, checkmates int
 }

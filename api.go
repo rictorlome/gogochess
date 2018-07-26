@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var initialBoard string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+var testBoards = []string{"4R1k1/8/r4BK1/8/5P1p/6P1/7P/8 b - - 1 49"}
 
 func startServer() {
 	router := mux.NewRouter()
@@ -26,7 +26,7 @@ func startServer() {
 func TestEndpoint(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		json.NewEncoder(w).Encode(initialBoard)
+		json.NewEncoder(w).Encode(testBoards)
 	case "POST":
 		HandleTestPost(w, r)
 	default:
