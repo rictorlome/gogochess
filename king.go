@@ -1,5 +1,11 @@
 package main
 
+var kingMoveDiffs = [][]int{
+	[]int{1, -1}, []int{1, 0}, []int{1, 1},
+	[]int{0, -1}, []int{0, 1},
+	[]int{-1, -1}, []int{-1, 0}, []int{-1, 1},
+}
+
 type King struct {
 	isWhite bool
 }
@@ -27,17 +33,16 @@ func (k *King) CanPossiblyAttack(pos Position, target Position) bool {
 	return -1 <= rowDiff && rowDiff <= 1 && -1 <= colDiff && colDiff <= 1
 }
 
-func (k *King) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
+func (k *King) GetDefaultMoveDiffs() [][]int {
+	return kingMoveDiffs
+}
+
+func (k *King) GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool {
 	res := make(map[Position]bool)
-	nums := []int{-1, 0, 1}
-	for _, i := range nums {
-		for _, j := range nums {
-			if !(i == 0 && j == 0) {
-				newPos := Position{pos.row + i, pos.col + j}
-				if newPos.isOnBoard() {
-					res[newPos] = true
-				}
-			}
+	for _, moveDiff := range moveDiffs {
+		newPos := Position{pos.row + moveDiff[0], pos.col + moveDiff[1]}
+		if newPos.isOnBoard() {
+			res[newPos] = true
 		}
 	}
 	return res
@@ -45,7 +50,7 @@ func (k *King) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 
 //Board state already knows whether king and rook have moved.
 func (k *King) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-	result := k.GetAttackingSquares(pos, b)
+	result := k.GetAttackingSquares(pos, b, kingMoveDiffs)
 	for move, _ := range result {
 		if b.hasColoredPieceThere(k.isWhite, move) {
 			delete(result, move)

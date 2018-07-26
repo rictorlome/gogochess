@@ -1,6 +1,23 @@
 // This file covers bishop, rook, and queen
 package main
 
+var bishopMoveDiffs = [][]int{
+	[]int{1, 1}, []int{-1, -1},
+	[]int{-1, 1}, []int{1, -1},
+}
+
+var rookMoveDiffs = [][]int{
+	[]int{1, 0}, []int{0, 1},
+	[]int{-1, 0}, []int{0, -1},
+}
+
+var queenMoveDiffs = [][]int{
+	[]int{1, 0}, []int{0, 1},
+	[]int{-1, 0}, []int{0, -1},
+	[]int{1, 1}, []int{-1, -1},
+	[]int{-1, 1}, []int{1, -1},
+}
+
 func slide(isWhite bool, moveDiffs [][]int, pos Position, b *Board) map[Position]bool {
 	res := make(map[Position]bool)
 OUTER:
@@ -36,19 +53,18 @@ func (b *Bishop) IsWhite() bool {
 
 func (bish *Bishop) CanPossiblyAttack(pos Position, target Position) bool {
 	return pos.row+pos.col == target.row+target.col || pos.row-pos.col == target.row-target.col
-
 }
 
-func (bish *Bishop) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
-	moveDiffs := [][]int{
-		[]int{1, 1}, []int{-1, -1},
-		[]int{-1, 1}, []int{1, -1},
-	}
+func (bish *Bishop) GetDefaultMoveDiffs() [][]int {
+	return bishopMoveDiffs
+}
+
+func (bish *Bishop) GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool {
 	return slide(bish.isWhite, moveDiffs, pos, b)
 }
 
 func (bish *Bishop) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-	result := bish.GetAttackingSquares(pos, b)
+	result := bish.GetAttackingSquares(pos, b, bishopMoveDiffs)
 	for move := range result {
 		if b.hasColoredPieceThere(bish.isWhite, move) {
 			delete(result, move)
@@ -86,16 +102,16 @@ func (r *Rook) CanPossiblyAttack(pos Position, target Position) bool {
 	return pos.row == target.row || pos.col == target.col
 }
 
-func (r *Rook) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
-	moveDiffs := [][]int{
-		[]int{1, 0}, []int{0, 1},
-		[]int{-1, 0}, []int{0, -1},
-	}
+func (r *Rook) GetDefaultMoveDiffs() [][]int {
+	return rookMoveDiffs
+}
+
+func (r *Rook) GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool {
 	return slide(r.isWhite, moveDiffs, pos, b)
 }
 
 func (r *Rook) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-	result := r.GetAttackingSquares(pos, b)
+	result := r.GetAttackingSquares(pos, b, rookMoveDiffs)
 	for move := range result {
 		if b.hasColoredPieceThere(r.isWhite, move) {
 			delete(result, move)
@@ -134,18 +150,16 @@ func (q *Queen) CanPossiblyAttack(pos Position, target Position) bool {
 	return pos.row == target.row || pos.col == target.col || onDiag
 }
 
-func (q *Queen) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
-	moveDiffs := [][]int{
-		[]int{1, 0}, []int{0, 1},
-		[]int{-1, 0}, []int{0, -1},
-		[]int{1, 1}, []int{-1, -1},
-		[]int{-1, 1}, []int{1, -1},
-	}
+func (q *Queen) GetDefaultMoveDiffs() [][]int {
+	return queenMoveDiffs
+}
+
+func (q *Queen) GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool {
 	return slide(q.isWhite, moveDiffs, pos, b)
 }
 
 func (q *Queen) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-	result := q.GetAttackingSquares(pos, b)
+	result := q.GetAttackingSquares(pos, b, queenMoveDiffs)
 	for move := range result {
 		if b.hasColoredPieceThere(q.isWhite, move) {
 			delete(result, move)

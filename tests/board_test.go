@@ -226,6 +226,7 @@ type checkMateTest struct {
 
 func TestCheckmate(t *testing.T) {
   tests := []checkMateTest {
+    // my games on lichess
     checkMateTest{"r1b1k2r/ppp2ppp/8/4p3/2P5/3nnP2/PP1NN1PP/2R1K2R w kq - 0 15", true, false},
     checkMateTest{"2q3k1/p1K2p1p/4qP1P/3p2P1/8/8/8/8 w - - 3 47", true, false},
     checkMateTest{"2r1kb1R/1q1nQp2/p5p1/4p1B1/1p2P1P1/2N2P2/PPP5/2K5 b - - 1 23", false, true},
@@ -235,6 +236,10 @@ func TestCheckmate(t *testing.T) {
     checkMateTest{"8/8/7p/pp5P/3k4/Pb2p3/q7/K7 w - - 8 54", true, false},
     checkMateTest{"1r2qNrk/2R3pQ/p6p/8/8/P6P/1P3PPK/8 b - - 8 36", false, true},
     checkMateTest{"4r1k1/2p2p2/1rpb2pp/3p4/1P1Pp3/N1P5/P2N1P1q/R2Q1RK1 w - - 2 25", true, false},
+    // others' games
+    checkMateTest{"R7/6pk/5p2/1P2bP1p/7K/3B2P1/7r/8 w - - 0 42", true, false},
+    checkMateTest{"rnbq3r/pp2kQpp/2pp4/2b1p1N1/4P3/3P4/PPP2PPP/RNB2RK1 b - - 3 10", false, true},
+    checkMateTest{"r4rk1/1b1nbppp/p1n5/1pp3PP/1P2PP2/P3p3/RBP2qB1/1N3KN1 w - - 1 21", true, false},
   }
   for i, test := range tests {
     b := GenerateBoard(test.fen)

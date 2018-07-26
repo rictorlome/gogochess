@@ -1,5 +1,9 @@
 package main
 
+var pawnMoveDiffs = [][]int{
+	[]int{0, 1}, []int{0, -1},
+}
+
 type Pawn struct {
 	isWhite bool
 }
@@ -31,11 +35,14 @@ func (p *Pawn) CanPossiblyAttack(pos Position, target Position) bool {
 	return pos.row+p.ForwardDir() == target.row && (colDiff == 1 || colDiff == -1)
 }
 
-func (p *Pawn) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
+func (p *Pawn) GetDefaultMoveDiffs() [][]int {
+	return pawnMoveDiffs
+}
+
+func (p *Pawn) GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool {
 	res := make(map[Position]bool)
-	forwardSquare := Position{pos.row + p.ForwardDir(), pos.col}
-	//can capture opposite color (or empassant sq) if neighbors of above square
-	for _, side := range forwardSquare.getNeighbors() {
+	for _, moveDiff := range moveDiffs {
+		side := Position{pos.row + p.ForwardDir(), pos.col + moveDiff[1]}
 		if side.isOnBoard() {
 			res[side] = true
 		}
@@ -44,7 +51,7 @@ func (p *Pawn) GetAttackingSquares(pos Position, b *Board) map[Position]bool {
 }
 
 func (p *Pawn) GetPseudoLegalMoves(pos Position, b *Board) map[Position]bool {
-	res := p.GetAttackingSquares(pos, b)
+	res := p.GetAttackingSquares(pos, b, pawnMoveDiffs)
 	for move := range res {
 		if !b.hasColoredPieceThere(!p.isWhite, move) && b.enPassantSquare != move {
 			delete(res, move)

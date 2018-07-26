@@ -101,7 +101,7 @@ func BenchmarkGetAttackingSquaresInitial(b *testing.B) {
   for i := 0; i < b.N; i++ {
     pos := poses[i % len(poses)]
     _, piece := board.findPiece(pos)
-    piece.GetAttackingSquares(pos, &board)
+    piece.GetAttackingSquares(pos, &board, piece.GetDefaultMoveDiffs())
   }
 }
 func BenchmarkGetAttackingSquaresMiddle(b *testing.B) {
@@ -116,7 +116,7 @@ func BenchmarkGetAttackingSquaresMiddle(b *testing.B) {
   for i := 0; i < b.N; i++ {
     pos := poses[i % len(poses)]
     _, piece := board.findPiece(pos)
-    piece.GetAttackingSquares(pos, &board)
+    piece.GetAttackingSquares(pos, &board, piece.GetDefaultMoveDiffs())
   }
 }
 func BenchmarkGetPseudoLegalMovesInitial(b *testing.B) {

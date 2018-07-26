@@ -78,7 +78,7 @@ func GetPieceMoves(fen string, sq string, methodToTest string) PieceMoves {
 	moves := make(map[Position]bool)
 	switch methodToTest {
 	case "GetAttackingSquares":
-		moves = piece.GetAttackingSquares(pos, &b)
+		moves = piece.GetAttackingSquares(pos, &b, piece.GetDefaultMoveDiffs())
 	case "GetPseudoLegalMoves":
 		moves = piece.GetPseudoLegalMoves(pos, &b)
 	case "GetLegalMoves":

@@ -127,7 +127,7 @@ OUTER:
 		if !canAttackAny {
 			continue OUTER
 		}
-		attackingSquares := piece.GetAttackingSquares(pos, b)
+		attackingSquares := piece.GetAttackingSquares(pos, b, piece.GetDefaultMoveDiffs())
 		for _, position := range positions {
 			if attackingSquares[position] {
 				return true
@@ -290,7 +290,7 @@ func (b *Board) inCheck(white bool) bool {
 		if !piece.CanPossiblyAttack(pos, kingPos) {
 			continue
 		}
-		attackingSquares := piece.GetAttackingSquares(pos, b)
+		attackingSquares := piece.GetAttackingSquares(pos, b, piece.GetDefaultMoveDiffs())
 		if attackingSquares[kingPos] {
 			return true
 		}
