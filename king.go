@@ -28,9 +28,13 @@ func (k *King) HomeRow() int {
 	return 7
 }
 
-func (k *King) CanPossiblyAttack(pos Position, target Position) bool {
+func (k *King) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
 	rowDiff, colDiff := target.row-pos.row, target.col-pos.col
-	return -1 <= rowDiff && rowDiff <= 1 && -1 <= colDiff && colDiff <= 1
+	can := -1 <= rowDiff && rowDiff <= 1 && -1 <= colDiff && colDiff <= 1
+	if can {
+		return true, kingMoveDiffs
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (k *King) GetDefaultMoveDiffs() [][]int {

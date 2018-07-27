@@ -93,10 +93,10 @@ func TestCheck(t *testing.T) {
   for _, test := range(tests) {
     b := GenerateBoard(test.fen)
     if b.inCheck(true) != test.whiteCheck {
-      t.Error(fmt.Sprintf("Expected white check to be %v, got %v", test.whiteCheck, b.inCheck(true)))
+      t.Error(fmt.Sprintf("For %v: Expected white check to be %v, got %v",test.fen, test.whiteCheck, b.inCheck(true)))
     }
     if b.inCheck(false) != test.blackCheck {
-      t.Error(fmt.Sprintf("Expected black check to be %v, got %v", test.blackCheck, b.inCheck(false)))
+      t.Error(fmt.Sprintf("For %v: Expected black check to be %v, got %v",test.fen, test.blackCheck, b.inCheck(false)))
     }
     if b.inCheck(false) && b.inCheck(true) {
       t.Error(fmt.Sprintf("Both players in check? Look at this position: %v", test.fen))

@@ -30,9 +30,13 @@ func (p *Pawn) hasMoved(pos Position) bool {
 	return (p.isWhite && pos.row != 1) || (!p.isWhite && pos.row != 6)
 }
 
-func (p *Pawn) CanPossiblyAttack(pos Position, target Position) bool {
+func (p *Pawn) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
 	colDiff := target.col - pos.col
-	return pos.row+p.ForwardDir() == target.row && (colDiff == 1 || colDiff == -1)
+	can := pos.row+p.ForwardDir() == target.row && (colDiff == 1 || colDiff == -1)
+	if can {
+		return true, pawnMoveDiffs
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (p *Pawn) GetDefaultMoveDiffs() [][]int {

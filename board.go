@@ -114,13 +114,15 @@ func (b *Board) areEmptySquares(positions []Position) bool {
 
 // The additional loop over positions in order to run CanPossiblyAttack, only produces slightly better benchmarks.
 // Not 100% if it's worth it.
+// Not sure how to use the second moveDiffs return value of CanPossiblyAttack here.
 func (b *Board) areAttackedByColor(white bool, positions []Position) bool {
 	pieces := b.getColoredPieces(white)
 OUTER:
 	for pos, piece := range pieces {
 		canAttackAny := false
 		for _, position := range positions {
-			if piece.CanPossiblyAttack(pos, position) {
+			can, _ := piece.CanPossiblyAttack(pos, position)
+			if can {
 				canAttackAny = true
 			}
 		}
@@ -287,10 +289,11 @@ func (b *Board) inCheck(white bool) bool {
 	kingPos := b.getColoredKing(white)
 	attackingPieces := b.getColoredPieces(!white)
 	for pos, piece := range attackingPieces {
-		if !piece.CanPossiblyAttack(pos, kingPos) {
+		can, moveDiffs := piece.CanPossiblyAttack(pos, kingPos)
+		if !can {
 			continue
 		}
-		attackingSquares := piece.GetAttackingSquares(pos, b, piece.GetDefaultMoveDiffs())
+		attackingSquares := piece.GetAttackingSquares(pos, b, moveDiffs)
 		if attackingSquares[kingPos] {
 			return true
 		}

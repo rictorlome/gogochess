@@ -2,10 +2,12 @@ package main
 
 var SIZE int = 7
 
+var NULLMOVEDIFFS [][]int
+
 type Piece interface {
 	IsWhite() bool
 	ToString() string
-	CanPossiblyAttack(pos Position, target Position) bool
+	CanPossiblyAttack(pos Position, target Position) (bool, [][]int)
 	GetDefaultMoveDiffs() [][]int
 	//AttackingSquares refer to squares which piece is currently attacking
 	GetAttackingSquares(pos Position, b *Board, moveDiffs [][]int) map[Position]bool

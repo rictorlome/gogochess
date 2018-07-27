@@ -22,9 +22,13 @@ func (n *Knight) IsWhite() bool {
 	return n.isWhite
 }
 
-func (n *Knight) CanPossiblyAttack(pos Position, target Position) bool {
+func (n *Knight) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
 	rowDiff, colDiff := target.row-pos.row, target.col-pos.col
-	return -2 <= rowDiff && rowDiff <= 2 && -2 <= colDiff && colDiff <= 2
+	can := -2 <= rowDiff && rowDiff <= 2 && -2 <= colDiff && colDiff <= 2
+	if can {
+		return true, knightMoveDiffs
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (n *Knight) GetDefaultMoveDiffs() [][]int {

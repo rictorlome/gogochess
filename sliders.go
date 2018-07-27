@@ -51,8 +51,22 @@ func (b *Bishop) IsWhite() bool {
 	return b.isWhite
 }
 
-func (bish *Bishop) CanPossiblyAttack(pos Position, target Position) bool {
-	return pos.row+pos.col == target.row+target.col || pos.row-pos.col == target.row-target.col
+func (bish *Bishop) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
+	// on top-left,bottom-right diagonal
+	if pos.row+pos.col == target.row+target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, -1}}
+		}
+		return true, [][]int{[]int{-1, 1}}
+	}
+	// on bottom-left, top-right diagonal
+	if pos.row-pos.col == target.row-target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, 1}}
+		}
+		return true, [][]int{[]int{-1, -1}}
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (bish *Bishop) GetDefaultMoveDiffs() [][]int {
@@ -98,8 +112,20 @@ func (r *Rook) IsWhite() bool {
 	return r.isWhite
 }
 
-func (r *Rook) CanPossiblyAttack(pos Position, target Position) bool {
-	return pos.row == target.row || pos.col == target.col
+func (r *Rook) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
+	if pos.row == target.row {
+		if pos.col < target.col {
+			return true, [][]int{[]int{0, 1}}
+		}
+		return true, [][]int{[]int{0, -1}}
+	}
+	if pos.col == target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, 0}}
+		}
+		return true, [][]int{[]int{-1, 0}}
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (r *Rook) GetDefaultMoveDiffs() [][]int {
@@ -145,9 +171,33 @@ func (q *Queen) IsWhite() bool {
 	return q.isWhite
 }
 
-func (q *Queen) CanPossiblyAttack(pos Position, target Position) bool {
-	onDiag := (pos.row+pos.col == target.row+target.col || pos.row-pos.col == target.row-target.col)
-	return pos.row == target.row || pos.col == target.col || onDiag
+func (q *Queen) CanPossiblyAttack(pos Position, target Position) (bool, [][]int) {
+	if pos.row+pos.col == target.row+target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, -1}}
+		}
+		return true, [][]int{[]int{-1, 1}}
+	}
+	// on bottom-left, top-right diagonal
+	if pos.row-pos.col == target.row-target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, 1}}
+		}
+		return true, [][]int{[]int{-1, -1}}
+	}
+	if pos.row == target.row {
+		if pos.col < target.col {
+			return true, [][]int{[]int{0, 1}}
+		}
+		return true, [][]int{[]int{0, -1}}
+	}
+	if pos.col == target.col {
+		if pos.row < target.row {
+			return true, [][]int{[]int{1, 0}}
+		}
+		return true, [][]int{[]int{-1, 0}}
+	}
+	return false, NULLMOVEDIFFS
 }
 
 func (q *Queen) GetDefaultMoveDiffs() [][]int {
