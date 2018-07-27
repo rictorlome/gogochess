@@ -189,8 +189,97 @@ func BenchmarkGetAllLegalMovesInitial(b *testing.B) {
   }
 }
 func BenchmarkGetAllLegalMovesMiddle(b *testing.B) {
-  board := GenerateBoard("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+  boards := []Board {
+    GenerateBoard("r3qb1k/1b4p1/p2pr2p/3n4/Pnp1N1N1/6RP/1B3PP1/1B1QR1K1 w - - bm Nxh6"),
+    GenerateBoard("r4rk1/pp1n1p1p/1nqP2p1/2b1P1B1/4NQ2/1B3P2/PP2K2P/2R5 w - - bm Rxc5"),
+    GenerateBoard("r2qk2r/ppp1b1pp/2n1p3/3pP1n1/3P2b1/2PB1NN1/PP4PP/R1BQK2R w KQkq - bm Nxg5"),
+    GenerateBoard("r1b1kb1r/1p1n1ppp/p2ppn2/6BB/2qNP3/2N5/PPP2PPP/R2Q1RK1 w kq - bm Nxe6"),
+    GenerateBoard("r2qrb1k/1p1b2p1/p2ppn1p/8/3NP3/1BN5/PPP3QP/1K3RR1 w - - bm e5"),
+    GenerateBoard("rnbqk2r/1p3ppp/p7/1NpPp3/QPP1P1n1/P4N2/4KbPP/R1B2B1R b kq - bm axb5"),
+    GenerateBoard("1r1bk2r/2R2ppp/p3p3/1b2P2q/4QP2/4N3/1B4PP/3R2K1 w k - bm Rxd8+"),
+    GenerateBoard("r3rbk1/ppq2ppp/2b1pB2/8/6Q1/1P1B3P/P1P2PP1/R2R2K1 w - - bm Bxh7+"),
+    GenerateBoard("r4r1k/4bppb/2n1p2p/p1n1P3/1p1p1BNP/3P1NP1/qP2QPB1/2RR2K1 w - - bm Ng5"),
+    GenerateBoard("r1b2rk1/1p1nbppp/pq1p4/3B4/P2NP3/2N1p3/1PP3PP/R2Q1R1K w - - bm Rxf7"),
+    GenerateBoard("r1b3k1/p2p1nP1/2pqr1Rp/1p2p2P/2B1PnQ1/1P6/P1PP4/1K4R1 w - - bm Rxh6"),
+  }
   for i := 0; i < b.N; i++ {
-     board.GetAllLegalMoves(i % 2 == 0)
+     boards[i % len(boards)].GetAllLegalMoves(i % 2 == 0)
+  }
+}
+
+func BenchmarkInCheckmateSome(b *testing.B) {
+  boards := []Board {
+    GenerateBoard("r1b1k2r/ppp2ppp/8/4p3/2P5/3nnP2/PP1NN1PP/2R1K2R w kq - 0 15"),
+    GenerateBoard("2q3k1/p1K2p1p/4qP1P/3p2P1/8/8/8/8 w - - 3 47"),
+    GenerateBoard("2r1kb1R/1q1nQp2/p5p1/4p1B1/1p2P1P1/2N2P2/PPP5/2K5 b - - 1 23"),
+    GenerateBoard("8/pp4pp/2p5/6Qk/1PP4P/P4pP1/5P1K/8 b - - 2 39"),
+    GenerateBoard("8/6pk/3p3p/4p3/4Pn1P/8/6q1/7K w - - 0 55"),
+    GenerateBoard("4R1k1/8/r4BK1/8/5P1p/6P1/7P/8 b - - 1 49"),
+    GenerateBoard("8/8/7p/pp5P/3k4/Pb2p3/q7/K7 w - - 8 54"),
+    GenerateBoard("1r2qNrk/2R3pQ/p6p/8/8/P6P/1P3PPK/8 b - - 8 36"),
+    GenerateBoard("4r1k1/2p2p2/1rpb2pp/3p4/1P1Pp3/N1P5/P2N1P1q/R2Q1RK1 w - - 2 25"),
+    // others' games
+    GenerateBoard("R7/6pk/5p2/1P2bP1p/7K/3B2P1/7r/8 w - - 0 42"),
+    GenerateBoard("rnbq3r/pp2kQpp/2pp4/2b1p1N1/4P3/3P4/PPP2PPP/RNB2RK1 b - - 3 10"),
+  }
+  for i := 0; i < b.N; i++ {
+     boards[i % len(boards)].inCheckmate(i % 2 == 0)
+  }
+}
+
+func BenchmarkInCheckmateNone(b *testing.B) {
+  boards := []Board {
+    GenerateBoard("r3qb1k/1b4p1/p2pr2p/3n4/Pnp1N1N1/6RP/1B3PP1/1B1QR1K1 w - - bm Nxh6"),
+    GenerateBoard("r4rk1/pp1n1p1p/1nqP2p1/2b1P1B1/4NQ2/1B3P2/PP2K2P/2R5 w - - bm Rxc5"),
+    GenerateBoard("r2qk2r/ppp1b1pp/2n1p3/3pP1n1/3P2b1/2PB1NN1/PP4PP/R1BQK2R w KQkq - bm Nxg5"),
+    GenerateBoard("r1b1kb1r/1p1n1ppp/p2ppn2/6BB/2qNP3/2N5/PPP2PPP/R2Q1RK1 w kq - bm Nxe6"),
+    GenerateBoard("r2qrb1k/1p1b2p1/p2ppn1p/8/3NP3/1BN5/PPP3QP/1K3RR1 w - - bm e5"),
+    GenerateBoard("rnbqk2r/1p3ppp/p7/1NpPp3/QPP1P1n1/P4N2/4KbPP/R1B2B1R b kq - bm axb5"),
+    GenerateBoard("1r1bk2r/2R2ppp/p3p3/1b2P2q/4QP2/4N3/1B4PP/3R2K1 w k - bm Rxd8+"),
+    GenerateBoard("r3rbk1/ppq2ppp/2b1pB2/8/6Q1/1P1B3P/P1P2PP1/R2R2K1 w - - bm Bxh7+"),
+    GenerateBoard("r4r1k/4bppb/2n1p2p/p1n1P3/1p1p1BNP/3P1NP1/qP2QPB1/2RR2K1 w - - bm Ng5"),
+    GenerateBoard("r1b2rk1/1p1nbppp/pq1p4/3B4/P2NP3/2N1p3/1PP3PP/R2Q1R1K w - - bm Rxf7"),
+    GenerateBoard("r1b3k1/p2p1nP1/2pqr1Rp/1p2p2P/2B1PnQ1/1P6/P1PP4/1K4R1 w - - bm Rxh6"),
+  }
+  for i := 0; i < b.N; i++ {
+     boards[i % len(boards)].inCheckmate(i % 2 == 0)
+  }
+}
+func BenchmarkInCheckSome(b *testing.B) {
+  boards := []Board {
+    GenerateBoard("r1b1k2r/ppp2ppp/8/4p3/2P5/3nnP2/PP1NN1PP/2R1K2R w kq - 0 15"),
+    GenerateBoard("2q3k1/p1K2p1p/4qP1P/3p2P1/8/8/8/8 w - - 3 47"),
+    GenerateBoard("2r1kb1R/1q1nQp2/p5p1/4p1B1/1p2P1P1/2N2P2/PPP5/2K5 b - - 1 23"),
+    GenerateBoard("8/pp4pp/2p5/6Qk/1PP4P/P4pP1/5P1K/8 b - - 2 39"),
+    GenerateBoard("8/6pk/3p3p/4p3/4Pn1P/8/6q1/7K w - - 0 55"),
+    GenerateBoard("4R1k1/8/r4BK1/8/5P1p/6P1/7P/8 b - - 1 49"),
+    GenerateBoard("8/8/7p/pp5P/3k4/Pb2p3/q7/K7 w - - 8 54"),
+    GenerateBoard("1r2qNrk/2R3pQ/p6p/8/8/P6P/1P3PPK/8 b - - 8 36"),
+    GenerateBoard("4r1k1/2p2p2/1rpb2pp/3p4/1P1Pp3/N1P5/P2N1P1q/R2Q1RK1 w - - 2 25"),
+    // others' games
+    GenerateBoard("R7/6pk/5p2/1P2bP1p/7K/3B2P1/7r/8 w - - 0 42"),
+    GenerateBoard("rnbq3r/pp2kQpp/2pp4/2b1p1N1/4P3/3P4/PPP2PPP/RNB2RK1 b - - 3 10"),
+  }
+  for i := 0; i < b.N; i++ {
+     boards[i % len(boards)].inCheck(i % 2 == 0)
+  }
+}
+
+func BenchmarkInCheckNone(b *testing.B) {
+  boards := []Board {
+    GenerateBoard("r3qb1k/1b4p1/p2pr2p/3n4/Pnp1N1N1/6RP/1B3PP1/1B1QR1K1 w - - bm Nxh6"),
+    GenerateBoard("r4rk1/pp1n1p1p/1nqP2p1/2b1P1B1/4NQ2/1B3P2/PP2K2P/2R5 w - - bm Rxc5"),
+    GenerateBoard("r2qk2r/ppp1b1pp/2n1p3/3pP1n1/3P2b1/2PB1NN1/PP4PP/R1BQK2R w KQkq - bm Nxg5"),
+    GenerateBoard("r1b1kb1r/1p1n1ppp/p2ppn2/6BB/2qNP3/2N5/PPP2PPP/R2Q1RK1 w kq - bm Nxe6"),
+    GenerateBoard("r2qrb1k/1p1b2p1/p2ppn1p/8/3NP3/1BN5/PPP3QP/1K3RR1 w - - bm e5"),
+    GenerateBoard("rnbqk2r/1p3ppp/p7/1NpPp3/QPP1P1n1/P4N2/4KbPP/R1B2B1R b kq - bm axb5"),
+    GenerateBoard("1r1bk2r/2R2ppp/p3p3/1b2P2q/4QP2/4N3/1B4PP/3R2K1 w k - bm Rxd8+"),
+    GenerateBoard("r3rbk1/ppq2ppp/2b1pB2/8/6Q1/1P1B3P/P1P2PP1/R2R2K1 w - - bm Bxh7+"),
+    GenerateBoard("r4r1k/4bppb/2n1p2p/p1n1P3/1p1p1BNP/3P1NP1/qP2QPB1/2RR2K1 w - - bm Ng5"),
+    GenerateBoard("r1b2rk1/1p1nbppp/pq1p4/3B4/P2NP3/2N1p3/1PP3PP/R2Q1R1K w - - bm Rxf7"),
+    GenerateBoard("r1b3k1/p2p1nP1/2pqr1Rp/1p2p2P/2B1PnQ1/1P6/P1PP4/1K4R1 w - - bm Rxh6"),
+  }
+  for i := 0; i < b.N; i++ {
+     boards[i % len(boards)].inCheck(i % 2 == 0)
   }
 }
