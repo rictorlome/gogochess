@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var testBoards = []string{"rnbqk1nr/ppp2ppp/4p3/3p4/1b1P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1"}
+var testBoards = []string{"2bqkbn1/2pppp2/np2N3/r3P1p1/p2N2B1/5Q2/PPPPKPP1/RNB2r2 w KQkq - 0 1", "2bqkbn1/2pppp2/np2N3/r3PBp1/p2N4/5Q2/PPPPKPP1/RNB2r2 b KQkq - 1 1", "2bqkbn1/2ppp3/np2Np2/r3PBp1/p2N4/5Q2/PPPPKPP1/RNB2r2 w KQkq - 0 2", "2bqkbn1/2ppp3/np2Np2/r3PBpQ/p2N4/8/PPPPKPP1/RNB2r2 b KQkq - 1 2"}
 
 func startServer() {
 	router := mux.NewRouter()

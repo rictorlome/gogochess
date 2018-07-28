@@ -66,6 +66,10 @@ type Board struct {
 	halfMoveClock, fullMoveNumber         int
 }
 
+func (b Board) String() string {
+	return b.GenerateFen()
+}
+
 func (b *Board) getColoredPieces(white bool) map[Position]Piece {
 	if white {
 		return b.whites
@@ -351,4 +355,46 @@ func (b *Board) GetAllLegalMoves(white bool) map[Position]bool {
 		}
 	}
 	return moves
+}
+
+type Move struct {
+	start     Position
+	end       Position
+	promotion string
+}
+
+func (b *Board) GetAllNextMoves(white bool) []Move {
+	var Moves []Move
+	for start, piece := range b.getColoredPieces(white) {
+		legalMoves := piece.GetLegalMoves(start, b)
+		for end := range legalMoves {
+			Moves = append(Moves, Move{start, end, ""})
+		}
+	}
+	return Moves
+}
+
+func (b *Board) ApplyMove(move Move) {
+	b.move(move.start, move.end, move.promotion)
+}
+
+func copyMap(dest map[Position]Piece, source map[Position]Piece) {
+	for k, v := range source {
+		dest[k] = v
+	}
+}
+
+func (b *Board) Dup() *Board {
+	newBoard := Board{}
+	newBoard.whiteKing, newBoard.blackKing, newBoard.enPassantSquare = b.whiteKing, b.blackKing, b.enPassantSquare
+	newBoard.whiteToMove = b.whiteToMove
+	newBoard.halfMoveClock, newBoard.fullMoveNumber = b.halfMoveClock, b.fullMoveNumber
+	newBoard.whites, newBoard.blacks = make(map[Position]Piece), make(map[Position]Piece)
+	newBoard.availableCastles = make(map[string]bool)
+	copyMap(newBoard.blacks, b.blacks)
+	copyMap(newBoard.whites, b.whites)
+	for k, v := range b.availableCastles {
+		newBoard.availableCastles[k] = v
+	}
+	return &newBoard
 }

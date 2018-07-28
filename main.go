@@ -3,8 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	a, b := ToPos("a1"), ToPos("h8")
-	fmt.Println("a-row", a.row, "a-col", a.col)
-	fmt.Println("b-row", b.row, "b-col", b.col)
+	b := GenerateBoard("2bqkbn1/2pppp2/np2N3/r3P1p1/p2N2B1/5Q2/PPPPKPP1/RNB2r2 w KQkq - 0 1")
+	fmt.Println(search(&b, 4))
 	startServer()
 }
