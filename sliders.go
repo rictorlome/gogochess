@@ -26,6 +26,8 @@ OUTER:
 			newPos := Position{pos.row + moveDiff[0]*i, pos.col + moveDiff[1]*i}
 			if newPos.isOnBoard() {
 				res[newPos] = true
+			} else {
+				continue OUTER
 			}
 			there, _ := b.findPiece(newPos)
 			if there {

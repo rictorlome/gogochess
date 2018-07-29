@@ -8,6 +8,14 @@
     <script src="js/chessboard-0.3.0.min.js"></script>
   </head>
   <body>
+    <form id="fenSubmit">
+      <fieldset>
+        <legend>Input FENs to generate boards</legend>
+        <label for="fensText">Fens Text</label>
+        <input type="text" id="fenTextArea"></input>
+          <input type="submit"></input>
+      </fieldset>
+    </form>
     <div id="board-list"></div>
     <form>
     <fieldset>
@@ -35,6 +43,11 @@
   <script>
     const idxToBoard = {};
     const idxToFen = {};
+
+    document.getElementById('fenSubmit').addEventListener('submit', () => {
+      const fentext = $('#fenTextArea').text()
+      debugger
+    })
 
     function whiteToMove(idx) {
       return idxToFen[idx].split(' ')[1] === "w"

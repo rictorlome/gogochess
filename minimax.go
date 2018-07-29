@@ -24,9 +24,9 @@ func GetSuccessors(b *Board) []Board {
 	return Boards
 }
 
-func Minimax(b *Board, maxDepth int, max bool) (int, []Board) {
+func Minimax(b *Board, maxDepth int) (int, []Board) {
 	evaluation := Evaluate(b)
-	if (evaluation == MAX_SCORE && max) || (evaluation == MIN_SCORE && !max) {
+	if (evaluation == MAX_SCORE && b.whiteToMove) || (evaluation == MIN_SCORE && !b.whiteToMove) {
 		return evaluation, []Board{*b}
 	}
 	if maxDepth <= 0 {
@@ -34,7 +34,7 @@ func Minimax(b *Board, maxDepth int, max bool) (int, []Board) {
 	}
 
 	var Best int
-	if max {
+	if b.whiteToMove {
 		Best = MIN_SCORE
 	} else {
 		Best = MAX_SCORE
@@ -44,8 +44,8 @@ func Minimax(b *Board, maxDepth int, max bool) (int, []Board) {
 
 	successors := GetSuccessors(b)
 	for i, successor := range successors {
-		optimalValue, path := Minimax(&successor, maxDepth-1, !max)
-		if i == 0 || (max && optimalValue > Best) || (!max && optimalValue < Best) {
+		optimalValue, path := Minimax(&successor, maxDepth-1)
+		if i == 0 || (b.whiteToMove && optimalValue > Best) || (!b.whiteToMove && optimalValue < Best) {
 			Best = optimalValue
 			Bestpath = path
 		}
