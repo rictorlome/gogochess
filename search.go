@@ -15,27 +15,46 @@ func getSuccessors(b *Board) []Board {
 	return Boards
 }
 
-func search(initial *Board, maxDepth int) (bool, []Board) {
-	var path []Board
+type perft struct {
+  depth, nodes, captures, enpassants, castles, promotions, checks, checkmates int
+}
 
-	if maxDepth <= 0 {
-		return false, path
+func search(initial *Board, maxPly int) (perft, []Board) {
+	if maxPly <= 0 {
+		return perft{0,1,0,0,0,0,0,0}, []Board{*initial}
 	}
 
-	path = append(path, *initial)
+	prevPerft, prevNodes := search(initial, maxPly - 1)
+	var curPerft perft
+	var curNodes []Board
 
-	if isGoal(initial) {
-		return true, path
-	}
-
-	successors := getSuccessors(initial)
-
-	for _, board := range successors {
-		reachedGoal, childPath := search(&board, maxDepth-1)
-		if reachedGoal {
-			path = append(path, childPath...)
-			return true, path
+	curPerft.depth = prevPerft.depth + 1
+	for _, board := range prevNodes {
+		boardsNextMoves := board.GetAllNextMoves(board.whiteToMove)
+		for _, move := range boardsNextMoves {
+			// if board.isCapture(move) {
+			// 	curPerft.captures += 1
+			// }
+			// if board.isEnpassant(move) {
+			// 	curPerft.enpassants += 1
+			// }
+			// if board.isCastle(move) {
+			// 	curPerft.castles += 1
+			// }
+			// if board.isPromotion(move) {
+			// 	curPerft.promotions += 1
+			// }
+			newBoard := board.Dup()
+			newBoard.ApplyMove(move)
+			if newBoard.inCheck(true) || newBoard.inCheck(false) {
+				curPerft.checks += 1
+			}
+			if newBoard.inCheckmate(true) || newBoard.inCheckmate(false) {
+				curPerft.checkmates += 1
+			}
+			curNodes = append(curNodes,*newBoard)
 		}
 	}
-	return false, []Board{}
+	curPerft.nodes = len(curNodes)
+	return curPerft, curNodes
 }
