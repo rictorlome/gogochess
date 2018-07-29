@@ -8,14 +8,12 @@
     <script src="js/chessboard-0.3.0.min.js"></script>
   </head>
   <body>
-    <form id="fenSubmit">
       <fieldset>
         <legend>Input FENs to generate boards</legend>
-        <label for="fensText">Fens Text</label>
-        <input type="text" id="fenTextArea"></input>
-          <input type="submit"></input>
+        <label for="fenText">Fens Text</label>
+        <textarea name="fenText" type="text" id="fenTextArea"></textarea>
+        <button id="GenerateBoardButton">Generate Boards</button>
       </fieldset>
-    </form>
     <div id="board-list"></div>
     <form>
     <fieldset>
@@ -44,9 +42,16 @@
     const idxToBoard = {};
     const idxToFen = {};
 
-    document.getElementById('fenSubmit').addEventListener('submit', () => {
-      const fentext = $('#fenTextArea').text()
-      debugger
+    $('#GenerateBoardButton').on('click', () => {
+      const fenText = $('#fenTextArea').val()
+      let res = [];
+      let i = 0;
+      while (i * 6 < fenText.split(' ').length) {
+        res.push(fenText.split(' ').slice(i*6,(i+1)*6).join(' '))
+        i++;
+      }
+      printAllBoards(res);
+      $('#fenTextArea').val('')
     })
 
     function whiteToMove(idx) {
