@@ -11,10 +11,10 @@ import (
 )
 
 var testBoards = []string{
-"B7/K1B1p1Q1/5r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 w - - 0 1",
- "8/K1B1p1Q1/2B2r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 b - - 1 1",
-  "8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3Pp2R/1P1NP3/2n5 w - - 0 2",
-	 "8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3PpN1R/1P2P3/2n5 b - - 1 2",
+	"B7/K1B1p1Q1/5r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 w - - 0 1",
+	"8/K1B1p1Q1/2B2r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 b - - 1 1",
+	"8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3Pp2R/1P1NP3/2n5 w - - 0 2",
+	"8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3PpN1R/1P2P3/2n5 b - - 1 2",
 }
 
 func startServer() {

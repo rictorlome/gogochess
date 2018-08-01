@@ -9,7 +9,7 @@ type MateInTwoTest struct {
   initial string
   solution string
 }
-// from https://sites.google.com/site/darktemplarchess/mate-in-2-puzzles
+//from https://sites.google.com/site/darktemplarchess/mate-in-2-puzzles
 func TestWhiteToMateInTwo(t *testing.T) {
   tests := []MateInTwoTest{
     MateInTwoTest{

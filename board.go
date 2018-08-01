@@ -363,6 +363,10 @@ type Move struct {
 	promotion string
 }
 
+func (m Move) String() string {
+	return m.start.String() + m.end.String() + m.promotion
+}
+
 func (b *Board) GetAllNextMoves(white bool) []Move {
 	var Moves []Move
 	for start, piece := range b.getColoredPieces(white) {
