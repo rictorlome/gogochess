@@ -33,44 +33,44 @@ func (p perft) String() string {
 	return fmt.Sprintf("At depth %v,\n%v nodes, %v captures, %v enpassants, %v castles, %v promotions, %v checks, and %v checkmates", p.depth, p.nodes, p.captures, p.enpassants, p.castles, p.promotions, p.checks, p.checkmates)
 }
 
-type BoardAndMove struct {
-	board Board
-	move  Move
+type CurAndPrevBoards struct {
+	curBoard Board
+	prevBoard Board
 }
 
-func search(initial *Board, maxPly int, divide int) (perft, []BoardAndMove) {
+func search(initial *Board, maxPly int, divide int) (perft, []CurAndPrevBoards) {
 	if maxPly <= 0 {
-		return perft{0, 1, 0, 0, 0, 0, 0, 0}, []BoardAndMove{
-			BoardAndMove{*initial, Move{}},
+		return perft{0, 1, 0, 0, 0, 0, 0, 0}, []CurAndPrevBoards{
+			CurAndPrevBoards{*initial, Board{}},
 		}
 	}
 
 	prevPerft, prevNodes := search(initial, maxPly-1, divide)
 	var curPerft perft
-	var curNodes []BoardAndMove
+	var curNodes []CurAndPrevBoards
 	divideMoves := make(map[string]int)
 
 	curPerft.depth = prevPerft.depth + 1
-	for _, boardAndMove := range prevNodes {
-		b := boardAndMove.board
-		boardsNextMoves := b.GetAllNextMoves(b.whiteToMove)
-		if divide == maxPly-1 {
-			divideMoves[boardAndMove.move.String()] += len(boardsNextMoves)
+	for _, CurAndPrevBoard := range prevNodes {
+		cur, prev := CurAndPrevBoard.curBoard, CurAndPrevBoard.prevBoard
+		boardsNextMoves := cur.GetAllNextMoves(cur.whiteToMove)
+		if divide == maxPly - 1 {
+			divideMoves[prev.GenerateFen()] += len(boardsNextMoves)
 		}
 		for _, move := range boardsNextMoves {
-			if b.isCapture(move) {
+			if cur.isCapture(move) {
 				curPerft.captures += 1
 			}
-			if b.isEnpassant(move) {
+			if cur.isEnpassant(move) {
 				curPerft.enpassants += 1
 			}
-			if b.isCastle(move) {
+			if cur.isCastle(move) {
 				curPerft.castles += 1
 			}
-			if b.isPromotion(move) {
+			if cur.isPromotion(move) {
 				curPerft.promotions += 1
 			}
-			newBoard := b.Dup()
+			newBoard := cur.Dup()
 			newBoard.ApplyMove(move)
 			if newBoard.inCheck(true) || newBoard.inCheck(false) {
 				curPerft.checks += 1
@@ -78,14 +78,14 @@ func search(initial *Board, maxPly int, divide int) (perft, []BoardAndMove) {
 			if newBoard.inCheckmate(true) || newBoard.inCheckmate(false) {
 				curPerft.checkmates += 1
 			}
-			bAndM := BoardAndMove{*newBoard, move}
-			curNodes = append(curNodes, bAndM)
+			curAndPrev := CurAndPrevBoards{*newBoard, cur}
+			curNodes = append(curNodes, curAndPrev)
 		}
 	}
 	curPerft.nodes = len(curNodes)
-	if divide == maxPly-1 {
+	if divide == maxPly - 1 {
 		for k, v := range divideMoves {
-			fmt.Println(divide, ".", k, v)
+			fmt.Println(fmt.Sprintf("%v. %v moves =       %v",divide,k,v))
 		}
 		fmt.Println(curPerft.depth, curPerft.nodes)
 	}
