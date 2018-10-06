@@ -156,72 +156,72 @@ func parseMove(s string) (start Position, end Position, promotion string) {
 
 func (b *Board) naiveMove(start Position, end Position, promotion string) {
 	_, piece := b.findPiece(start)
-	capture, _ := b.findPiece(end)
+	// capture, _ := b.findPiece(end)
 	if piece.IsWhite() {
 		delete(b.whites, start)
 		b.whites[end] = piece
-		if capture {
-			delete(b.blacks, end)
-		}
+		// if capture {
+		// 	delete(b.blacks, end)
+		// }
 	} else {
 		delete(b.blacks, start)
 		b.blacks[end] = piece
-		if capture {
-			delete(b.whites, end)
-		}
+		// if capture {
+		// 	delete(b.whites, end)
+		// }
 	}
 }
 
 // must be called before the actual move, in order to check if capture took place.
 func (b *Board) updateBoardState(start Position, end Position) {
-	_, piece := b.findPiece(start)
+	// _, piece := b.findPiece(start)
 	// king position and castle
-	if piece.ToString() == "K" {
-		b.whiteKing = end
-		b.availableCastles["wk"], b.availableCastles["wq"] = false, false
-	}
-	if piece.ToString() == "k" {
-		b.blackKing = end
-		b.availableCastles["bk"], b.availableCastles["bq"] = false, false
-	}
+	// if piece.ToString() == "K" {
+	// 	b.whiteKing = end
+	// 	b.availableCastles["wk"], b.availableCastles["wq"] = false, false
+	// }
+	// if piece.ToString() == "k" {
+	// 	b.blackKing = end
+	// 	b.availableCastles["bk"], b.availableCastles["bq"] = false, false
+	// }
 	// en passant square
-	if piece.ToString() == "P" && start.row == 1 && end.row == 3 {
-		b.enPassantSquare = Position{end.row - 1, end.col}
-	} else if piece.ToString() == "p" && start.row == 6 && end.row == 4 {
-		b.enPassantSquare = Position{end.row + 1, end.col}
-	} else {
-		b.enPassantSquare = Position{-1, -1}
-	}
+	// if piece.ToString() == "P" && start.row == 1 && end.row == 3 {
+	// 	b.enPassantSquare = Position{end.row - 1, end.col}
+	// } else if piece.ToString() == "p" && start.row == 6 && end.row == 4 {
+	// 	b.enPassantSquare = Position{end.row + 1, end.col}
+	// } else {
+	// 	b.enPassantSquare = Position{-1, -1}
+	// }
 	// who to move
 	b.whiteToMove = !b.whiteToMove
-	// availabe castles
-	if piece.ToString() == "R" {
-		if start.col == 0 {
-			b.availableCastles["wq"] = false
-		}
-		if start.col == 7 {
-			b.availableCastles["wk"] = false
-		}
-	}
-	if piece.ToString() == "r" {
-		if start.col == 0 {
-			b.availableCastles["bq"] = false
-		}
-		if start.col == 7 {
-			b.availableCastles["bk"] = false
-		}
-	}
+	// available castles
+	// if piece.ToString() == "R" {
+	// 	if start.col == 0 {
+	// 		b.availableCastles["wq"] = false
+	// 	}
+	// 	if start.col == 7 {
+	// 		b.availableCastles["wk"] = false
+	// 	}
+	// }
+	// if piece.ToString() == "r" {
+	// 	if start.col == 0 {
+	// 		b.availableCastles["bq"] = false
+	// 	}
+	// 	if start.col == 7 {
+	// 		b.availableCastles["bk"] = false
+	// 	}
+	// }
 	// half clock move (number of moves since last pawn advance or capture)
-	capture, _ := b.findPiece(end)
-	if piece.ToString() == "P" || piece.ToString() == "p" || capture {
-		b.halfMoveClock = 0
-	} else {
-		b.halfMoveClock += 1
-	}
-	// full move number (updated after whiteToMove is updated)
-	if b.whiteToMove {
-		b.fullMoveNumber += 1
-	}
+	// capture, _ := b.findPiece(end)
+	// if piece.ToString() == "P" || piece.ToString() == "p" || capture {
+	// 	b.halfMoveClock = 0
+	// } else {
+	// 	b.halfMoveClock += 1
+	// }
+	// // full move number (updated after whiteToMove is updated)
+	// if b.whiteToMove {
+	// 	b.fullMoveNumber += 1
+	// }
 }
 
 // must be called before update board state, in order to access previous en passant square
@@ -282,10 +282,10 @@ func (b *Board) moveUCI(s string) {
 }
 
 func (b *Board) move(start Position, end Position, promotion string) {
-	b.cleanUpEnPassant(start, end)
-	b.cleanUpCastle(start, end)
+	// b.cleanUpEnPassant(start, end)
+	// b.cleanUpCastle(start, end)
 	b.updateBoardState(start, end)
-	b.cleanUpPromotion(start, promotion)
+	// b.cleanUpPromotion(start, promotion)
 	b.naiveMove(start, end, promotion)
 }
 
@@ -369,7 +369,8 @@ func (m Move) String() string {
 
 func (b *Board) GetAllNextMoves(white bool) []Move {
 	var Moves []Move
-	for start, piece := range b.getColoredPieces(white) {
+	pieces := b.getColoredPieces(white)
+	for start, piece := range pieces {
 		legalMoves := piece.GetLegalMoves(start, b)
 		for end := range legalMoves {
 			Moves = append(Moves, Move{start, end, ""})
@@ -389,16 +390,18 @@ func copyMap(dest map[Position]Piece, source map[Position]Piece) {
 }
 
 func (b *Board) Dup() *Board {
-	newBoard := Board{}
-	newBoard.whiteKing, newBoard.blackKing, newBoard.enPassantSquare = b.whiteKing, b.blackKing, b.enPassantSquare
-	newBoard.whiteToMove = b.whiteToMove
-	newBoard.halfMoveClock, newBoard.fullMoveNumber = b.halfMoveClock, b.fullMoveNumber
-	newBoard.whites, newBoard.blacks = make(map[Position]Piece), make(map[Position]Piece)
-	newBoard.availableCastles = make(map[string]bool)
-	copyMap(newBoard.blacks, b.blacks)
-	copyMap(newBoard.whites, b.whites)
-	for k, v := range b.availableCastles {
-		newBoard.availableCastles[k] = v
-	}
-	return &newBoard
+	// newBoard := Board{}
+	// newBoard.whiteKing, newBoard.blackKing, newBoard.enPassantSquare = b.whiteKing, b.blackKing, b.enPassantSquare
+	// newBoard.whiteToMove = b.whiteToMove
+	// newBoard.halfMoveClock, newBoard.fullMoveNumber = b.halfMoveClock, b.fullMoveNumber
+	// newBoard.whites, newBoard.blacks = make(map[Position]Piece), make(map[Position]Piece)
+	// newBoard.availableCastles = make(map[string]bool)
+	// copyMap(newBoard.blacks, b.blacks)
+	// copyMap(newBoard.whites, b.whites)
+	// for k, v := range b.availableCastles {
+	// 	newBoard.availableCastles[k] = v
+	// }
+	// return &newBoard
+	n := GenerateBoard(b.GenerateFen())
+	return &n
 }

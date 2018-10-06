@@ -11,10 +11,11 @@ import (
 )
 
 var testBoards = []string{
-	"B7/K1B1p1Q1/5r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 w - - 0 1",
-	"8/K1B1p1Q1/2B2r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 b - - 1 1",
-	"8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3Pp2R/1P1NP3/2n5 w - - 0 2",
-	"8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3PpN1R/1P2P3/2n5 b - - 1 2",
+	"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+	// "B7/K1B1p1Q1/5r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 w - - 0 1",
+	// "8/K1B1p1Q1/2B2r2/7p/1P1kp1bR/3P3R/1P1NP3/2n5 b - - 1 1",
+	// "8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3Pp2R/1P1NP3/2n5 w - - 0 2",
+	// "8/K1B1p1Q1/2B2r2/7p/1P1k2bR/3PpN1R/1P2P3/2n5 b - - 1 2",
 }
 
 func startServer() {
@@ -89,7 +90,12 @@ func GetPieceMoves(fen string, sq string, methodToTest string) PieceMoves {
 	case "GetLegalMoves":
 		moves = piece.GetLegalMoves(pos, &b)
 	case "GetAllLegalMoves":
-		moves = b.GetAllLegalMoves(piece.IsWhite())
+		movesArray := b.GetAllNextMoves(b.whiteToMove)
+		fmt.Println(len(movesArray))
+		for _, m := range movesArray {
+			moves[m.end] = true
+		}
+		// moves = b.GetAllLegalMoves(piece.IsWhite())
 	}
 	var sqs []MoveStatus
 	for move, _ := range moves {

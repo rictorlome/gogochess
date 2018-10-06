@@ -38,11 +38,22 @@ type Node struct {
 	children  []Node
 }
 
+var posMap = make(map[string]int)
+
 func searchTree(initial Board, remainingDepth int) Node {
 	var nextMoves []Move
 	var resultChildren []Node
 	if 0 < remainingDepth {
 		nextMoves = initial.GetAllNextMoves(initial.whiteToMove)
+		// for debugging
+		f := initial.GenerateFen()
+		if posMap[f] != 0 && posMap[f] != len(nextMoves) {
+			fromFen := GenerateBoard(f)
+			fmt.Println(fmt.Sprintf("pos is %v, prev moves was %v, cur moves is %v", f, posMap[f], len(nextMoves)))
+			fmt.Println(fmt.Sprintf("moves from this fen is: %v", len(fromFen.GetAllNextMoves(fromFen.whiteToMove))))
+		}
+		posMap[f] = len(nextMoves)
+		//
 		for _, nextMove := range nextMoves {
 			newBoard := initial.Dup()
 			newBoard.ApplyMove(nextMove)
