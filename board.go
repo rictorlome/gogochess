@@ -194,7 +194,7 @@ func (b *Board) updateBoardState(start Position, end Position) {
 	}
 	// who to move
 	b.whiteToMove = !b.whiteToMove
-	// availabe castles
+	// available castles
 	if piece.ToString() == "R" {
 		if start.col == 0 {
 			b.availableCastles["wq"] = false
@@ -339,7 +339,7 @@ func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) 
 	}
 	// replace the piece, if there was a capture
 	if capture {
-		pieces := b.getColoredPieces(!piece.IsWhite())
+		pieces := b.getColoredPieces(target.IsWhite())
 		pieces[end] = target
 	}
 	return check
