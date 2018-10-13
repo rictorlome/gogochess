@@ -49,7 +49,8 @@ func GeneratePositions(pos string) (map[Position]Piece, map[Position]Piece, Posi
 	rows := strings.Split(pos, "/")
 	whites := make(map[Position]Piece)
 	blacks := make(map[Position]Piece)
-	var whiteKing, blackKing Position
+	whiteKing := Position{-1,-1}
+	blackKing := Position{-1,-1}
 	for i, row := range rows {
 		offset := 0
 		for j, sq := range row {
