@@ -37,7 +37,7 @@ var secondaryPerf = perftSeq {
 }
 
 var perftTests = []perftSeq{
-  initialPerft,
+  initialPerft, secondaryPerf,
 }
 
 
@@ -45,7 +45,7 @@ var perftTests = []perftSeq{
 func TestSearch(t *testing.T) {
   for _, pSeq := range perftTests {
     b := GenerateBoard(pSeq.startFen)
-    for i := 0; i < 5; i++ {
+    for i := 0; i < 4; i++ {
       perft, _ := search(&b, i)
       if perft != pSeq.perfts[i] {
         t.Error(fmt.Sprintf("\nExpected:\n%v\nGot:\n%v", pSeq.perfts[i], perft))

@@ -140,6 +140,7 @@ func search(initial *Board, maxPly int) (perft, []Board) {
 				curPerft.captures += 1
 			}
 			if board.isEnpassant(piece, move) {
+				curPerft.captures += 1
 				curPerft.enpassants += 1
 			}
 			if board.isCastle(piece, move) {
