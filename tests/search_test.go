@@ -37,7 +37,7 @@ var secondaryPerf = perftSeq {
 }
 
 var perftTests = []perftSeq{
-  initialPerft, secondaryPerf,
+  initialPerft,
 }
 
 

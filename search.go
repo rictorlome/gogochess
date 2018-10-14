@@ -34,6 +34,7 @@ func (p perft) String() string {
 
 type Node struct {
 	b         Board
+	checkmate bool
 	nextMoves []Move
 	children  []Node
 }
@@ -41,15 +42,19 @@ type Node struct {
 func searchTree(initial Board, remainingDepth int) Node {
 	var nextMoves []Move
 	var resultChildren []Node
+	var checkmate bool
 	if 0 < remainingDepth {
 		nextMoves = initial.GetAllNextMoves(initial.whiteToMove)
+		if len(nextMoves) == 0 {
+			checkmate = true
+		}
 		for _, nextMove := range nextMoves {
 			newBoard := initial.Dup()
 			newBoard.ApplyMove(nextMove)
 			resultChildren = append(resultChildren, searchTree(*newBoard, remainingDepth-1))
 		}
 	}
-	return Node{initial, nextMoves, resultChildren}
+	return Node{initial, checkmate, nextMoves, resultChildren}
 }
 
 func walkTree(prefix string, n Node) {
@@ -79,7 +84,7 @@ func countLeaves(n Node) int {
 		for _, child := range n.children {
 			res += countLeaves(child)
 		}
-	} else {
+	} else if !n.checkmate {
 		res = 1
 	}
 	return res

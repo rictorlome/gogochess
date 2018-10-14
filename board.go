@@ -320,26 +320,27 @@ func (b *Board) inCheckmate(white bool) bool {
 
 //NOTE: are promotion, castle and en passant edge cases relevant here? Seems like no.
 func (b *Board) wouldCauseCheck(start Position, end Position, promotion string) bool {
-	_, piece := b.findPiece(start)
-	capture, target := b.findPiece(end)
-	b.naiveMove(start, end, promotion)
+	c := b.Dup()
+	_, piece := c.findPiece(start)
+	capture, target := c.findPiece(end)
+	c.naiveMove(start, end, promotion)
 	if piece.ToString() == "K" {
-		b.whiteKing = end
+		c.whiteKing = end
 	}
 	if piece.ToString() == "k" {
-		b.blackKing = end
+		c.blackKing = end
 	}
-	check := b.inCheck(piece.IsWhite())
-	b.naiveMove(end, start, promotion)
+	check := c.inCheck(piece.IsWhite())
+	c.naiveMove(end, start, promotion)
 	if piece.ToString() == "K" {
-		b.whiteKing = start
+		c.whiteKing = start
 	}
 	if piece.ToString() == "k" {
-		b.blackKing = start
+		c.blackKing = start
 	}
 	// replace the piece, if there was a capture
 	if capture {
-		pieces := b.getColoredPieces(target.IsWhite())
+		pieces := c.getColoredPieces(target.IsWhite())
 		pieces[end] = target
 	}
 	return check
