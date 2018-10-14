@@ -89,6 +89,10 @@ func (k *King) GetLegalMoves(pos Position, b *Board) map[Position]bool {
 		}
 	}
 	row := k.HomeRow()
+	kingside, queenside := "bk", "bq"
+	if k.isWhite {
+		kingside, queenside = "wk", "wq"
+	}
 	queensquare, kingsquare := Position{row, 2}, Position{row, 6}
 	interqueen := []Position{
 		Position{row, 2}, Position{row, 3}, Position{row, 4},
@@ -96,10 +100,10 @@ func (k *King) GetLegalMoves(pos Position, b *Board) map[Position]bool {
 	interking := []Position{
 		Position{row, 6}, Position{row, 5}, Position{row, 4},
 	}
-	if result[queensquare] && b.areAttackedByColor(!k.isWhite, interqueen) {
+	if b.availableCastles[queenside] && result[queensquare] && b.areAttackedByColor(!k.isWhite, interqueen) {
 		delete(result, queensquare)
 	}
-	if result[kingsquare] && b.areAttackedByColor(!k.isWhite, interking) {
+	if b.availableCastles[kingside] && result[kingsquare] && b.areAttackedByColor(!k.isWhite, interking) {
 		delete(result, kingsquare)
 	}
 	return result
